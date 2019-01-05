@@ -31,6 +31,7 @@
 
 </head>
 <body class="hold-transition login-page">
+<div>Hi Miggy</div>
 <div class="login-box">
   <div class="login-logo">
     <a href="<?php echo base_url('auth'); ?>"><b>Login</b></a>
