@@ -5,7 +5,9 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Delete Group
+        <?php if($brands_data): ?>
+        	<?php echo $brands_data['name']; ?>
+        <?php endif; ?>
       </h1>
     </section>
 
@@ -27,12 +29,20 @@
             </div>
           <?php endif; ?>
 
-          <h1>Do you really want to remove ?</h1>
-
-          <form action="<?php echo base_url('groups/delete/'.$id) ?>" method="post">
-            <input type="submit" class="btn btn-primary" name="confirm" value="Confirm">
-            <a href="<?php echo base_url('groups') ?>" class="btn btn-warning">Cancel</a>
-          </form>
+		 <table class="table table-bordered table-condensed table-hovered">
+                <tr>
+                  <th class="thwidth">Brand ID</th>
+                  <td><?php echo $brands_data['id']; ?></td>
+                </tr>
+                <tr>
+                  <th  class="thwidth">Name</th>
+                  <td><?php echo $brands_data['name']; ?></td>
+                </tr>
+              </table>
+          
+		  <a href="<?php echo base_url('settings/brandEdit/'.$brands_data['id']) ?>" class="btn btn-primary">Edit Brand</a>
+		  <a href="<?php echo base_url('settings/brandDelete/'.$brands_data['id']) ?>" class="btn btn-danger">Delete Brand</a>
+		  <a href="<?php echo base_url('settings/brands') ?>" class="btn btn-warning">Back</a>
 
         </div>
         <!-- col-md-12 -->
@@ -47,8 +57,7 @@
 
   <script type="text/javascript">
     $(document).ready(function() {
-      $('#groupMainNav').addClass('active');
-      $('#manageGroupSubMenu').addClass('active');
+      $('#settingMainNav').addClass('active');
     });
   </script>  
 

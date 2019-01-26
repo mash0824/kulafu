@@ -5,14 +5,8 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Manage
-        <small>Groups</small>
+        Delete User
       </h1>
-      <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li><a href="<?php echo base_url('users/') ?>">Users</a></li>
-        <li class="active">Delete</li>
-      </ol>
     </section>
 
     <!-- Main content -->
@@ -54,7 +48,6 @@
   <script type="text/javascript">
     $(document).ready(function() {
       $("#userMainNav").addClass('active');
-      $("#manageUserSubNav").addClass('active');
     });
   </script>
 

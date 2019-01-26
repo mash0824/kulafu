@@ -6,13 +6,13 @@
     <section class="content-header">
       <div class="col-xs-12 col-sm-12 col-md-6">
       <h1>
-        User Accounts
+       	Units
       </h1>
       </div>
       
-      <?php if(in_array('createUser', $user_permission)): ?>
+      <?php if(in_array('createSetting', $user_permission)): ?>
       <div class="col-xs-12 col-sm-12 col-md-6 text-right">
-            <a href="<?php echo base_url('users/create') ?>" class="btn btn-primary">Create New User</a>
+            <a href="<?php echo base_url('settings/unitCreate') ?>" class="btn btn-primary">Create New Unit</a> 
        </div>
           <?php endif; ?>
     </section>
@@ -34,45 +34,36 @@
               <?php echo $this->session->flashdata('error'); ?>
             </div>
           <?php endif; ?>
-          
-          
-
-
           <div class="box">
+            <!-- /.box-header -->
             <div class="box-body">
-              <table id="userTable" class="table table-bordered table-striped">
+              <table id="customerTable" class="table table-bordered table-striped">
                 <thead>
                 <tr>
-                  <th>Username</th>
-                  <th>Group</th>
-                  <th>Email</th>
-                  
-
-                  <?php if(in_array('updateUser', $user_permission) || in_array('deleteUser', $user_permission)): ?>
-                  <th>Action</th>
+                  <th>Unit ID</th>
+                  <th>Unit Name</th>
+                  <?php if(in_array('updateSetting', $user_permission) || in_array('deleteSetting', $user_permission)): ?>
+                    <th>Action</th>
                   <?php endif; ?>
                 </tr>
                 </thead>
                 <tbody>
-                  <?php if($user_data): ?>                  
-                    <?php foreach ($user_data as $k => $v): ?>
+                  <?php if($units_data): ?>                  
+                    <?php foreach ($units_data as $k => $v): ?>
                       <tr>
-                        <td><?php echo $v['user_info']['username']; ?></td>
-                        <td><?php echo $v['user_group']['group_name']; ?></td>
-                        <td><?php echo $v['user_info']['email']; ?></td>
-
-                        <?php if(in_array('updateUser', $user_permission) || in_array('deleteUser', $user_permission)): ?>
-
+                        <td><?php echo $v['id']; ?></td>
+                        <td><?php echo $v['name']; ?></td>
                         <td>
-                          <?php if(in_array('updateUser', $user_permission)): ?>
-                            <a href="<?php echo base_url('users/edit/'.$v['user_info']['id']) ?>" class="greenlink">edit</a>
-                          <?php endif; ?>
-                          &nbsp;
-                          <?php if(in_array('deleteUser', $user_permission)): ?>
-                            <a href="<?php echo base_url('users/delete/'.$v['user_info']['id']) ?>" class="redlink">delete</a>
+                           <?php if(in_array('viewSetting', $user_permission)): ?>
+                          <a href="<?php echo base_url('settings/unitView/'.$v['id']) ?>" class="">view</i></a>  
+                          <?php endif; ?>&nbsp;
+                          <?php if(in_array('updateSetting', $user_permission)): ?>
+                          <a href="<?php echo base_url('settings/unitEdit/'.$v['id']) ?>" class="greenlink">edit</i></a>  
+                          <?php endif; ?>&nbsp;
+                          <?php if(in_array('deleteSetting', $user_permission)): ?>
+                          <a href="<?php echo base_url('settings/unitDelete/'.$v['id']) ?>" class="redlink">delete</i></a>
                           <?php endif; ?>
                         </td>
-                      <?php endif; ?>
                       </tr>
                     <?php endforeach ?>
                   <?php endif; ?>
@@ -95,11 +86,9 @@
 
   <script type="text/javascript">
     $(document).ready(function() {
-      $('#userTable').DataTable({
-        'order' : [],
-        });
-
-      $("#userMainNav").addClass('active');
-      $("#manageUserSubNav").addClass('active');
+      $('#customerTable').DataTable({
+    	  'order' : [],
+      });
+      $('#settingMainNav').addClass('active');
     });
   </script>

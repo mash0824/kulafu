@@ -5,7 +5,9 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Delete Group
+        <?php if($customers_data): ?>
+        	<?php echo $customers_data['customer_name']; ?>
+        <?php endif; ?>
       </h1>
     </section>
 
@@ -27,12 +29,28 @@
             </div>
           <?php endif; ?>
 
-          <h1>Do you really want to remove ?</h1>
-
-          <form action="<?php echo base_url('groups/delete/'.$id) ?>" method="post">
-            <input type="submit" class="btn btn-primary" name="confirm" value="Confirm">
-            <a href="<?php echo base_url('groups') ?>" class="btn btn-warning">Cancel</a>
-          </form>
+		 <table class="table table-bordered table-condensed table-hovered">
+                <tr>
+                  <th class="thwidth">Customer ID</th>
+                  <td><?php echo $customers_data['cs_id']; ?></td>
+                </tr>
+                <tr>
+                  <th  class="thwidth">Delivery Address</th>
+                  <td><?php echo $customers_data['address']; ?></td>
+                </tr>
+                <tr>
+                  <th  class="thwidth">Contact Person</th>
+                  <td><?php echo $customers_data['contact_person']; ?></td>
+                </tr>
+                <tr>
+                  <th  class="thwidth">Email Address</th>
+                  <td><?php echo $customers_data['email']; ?></td>
+                </tr>
+              </table>
+          
+		  <a href="<?php echo base_url('customers/edit/'.$customers_data['id']) ?>" class="btn btn-primary">Edit Customer</a>
+		  <a href="<?php echo base_url('customers/delete/'.$customers_data['id']) ?>" class="btn btn-danger">Delete Customer</a>
+		  <a href="<?php echo base_url('customers') ?>" class="btn btn-warning">Back</a>
 
         </div>
         <!-- col-md-12 -->
@@ -47,8 +65,7 @@
 
   <script type="text/javascript">
     $(document).ready(function() {
-      $('#groupMainNav').addClass('active');
-      $('#manageGroupSubMenu').addClass('active');
+      $('#customerMainNav').addClass('active');
     });
   </script>  
 

@@ -4,14 +4,17 @@
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
+      <div class="col-xs-12 col-sm-12 col-md-6">
       <h1>
-        Manage
-        <small>Groups</small>
+        Groups
       </h1>
-      <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">groups</li>
-      </ol>
+      </div>
+      
+      <?php if(in_array('createGroup', $user_permission)): ?>
+      <div class="col-xs-12 col-sm-12 col-md-6 text-right">
+            <a href="<?php echo base_url('groups/create') ?>" class="btn btn-primary">Create New Group</a>
+       </div>
+          <?php endif; ?>
     </section>
 
     <!-- Main content -->
@@ -31,16 +34,7 @@
               <?php echo $this->session->flashdata('error'); ?>
             </div>
           <?php endif; ?>
-
-          <?php if(in_array('createGroup', $user_permission)): ?>
-            <a href="<?php echo base_url('groups/create') ?>" class="btn btn-primary">Add Group</a>
-            <br /> <br />
-          <?php endif; ?>
-
           <div class="box">
-            <div class="box-header">
-              <h3 class="box-title">Manage Groups</h3>
-            </div>
             <!-- /.box-header -->
             <div class="box-body">
               <table id="groupTable" class="table table-bordered table-striped">
@@ -61,10 +55,10 @@
                         <?php if(in_array('updateGroup', $user_permission) || in_array('deleteGroup', $user_permission)): ?>
                         <td>
                           <?php if(in_array('updateGroup', $user_permission)): ?>
-                          <a href="<?php echo base_url('groups/edit/'.$v['id']) ?>" class="btn btn-default"><i class="fa fa-edit"></i></a>  
-                          <?php endif; ?>
+                          <a href="<?php echo base_url('groups/edit/'.$v['id']) ?>" class="greenlink">edit</i></a>  
+                          <?php endif; ?>&nbsp;
                           <?php if(in_array('deleteGroup', $user_permission)): ?>
-                          <a href="<?php echo base_url('groups/delete/'.$v['id']) ?>" class="btn btn-default"><i class="fa fa-trash"></i></a>
+                          <a href="<?php echo base_url('groups/delete/'.$v['id']) ?>" class="redlink">delete</i></a>
                           <?php endif; ?>
                         </td>
                         <?php endif; ?>

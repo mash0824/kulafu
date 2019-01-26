@@ -5,7 +5,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Create New User
+        Edit <?php echo $brands_data['name'] ?>
       </h1>
     </section>
 
@@ -28,50 +28,23 @@
           <?php endif; ?>
 
           <div class="box">
-            <form role="form" action="<?php base_url('users/create') ?>" method="post">
+            <form role="form" action="<?php base_url('settings/brandEdit') ?>" method="post">
               <div class="box-body">
-				<?php if(!empty(validation_errors())) { ?>
+                <?php if(!empty(validation_errors())) { ?>
 				<div class="alert alert-error alert-dismissible" role="alert">
               		<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 	<?php echo validation_errors(); ?>
                 	</div>
 				<?php } ?>
                 <div class="form-group">
-                  <label for="groups">Groups</label>
-                  <select class="form-control" id="groups" name="groups">
-                    <option value="">Select Groups</option>
-                    <?php foreach ($group_data as $k => $v): ?>
-                      <option value="<?php echo $v['id'] ?>"><?php echo $v['group_name'] ?></option>
-                    <?php endforeach ?>
-                  </select>
-                </div>
-
-
-                <div class="form-group">
-                  <label for="username">Username</label>
-                  <input type="text" class="form-control" id="username" name="username" placeholder="Username" autocomplete="off">
-                </div>
-
-                <div class="form-group">
-                  <label for="email">Email</label>
-                  <input type="email" class="form-control" id="email" name="email" placeholder="Email" autocomplete="off">
-                </div>
-
-                <div class="form-group">
-                  <label for="password">Password</label>
-                  <input type="password" class="form-control" id="password" name="password" placeholder="Password" autocomplete="off">
-                </div>
-
-                <div class="form-group">
-                  <label for="cpassword">Confirm password</label>
-                  <input type="password" class="form-control" id="cpassword" name="cpassword" placeholder="Confirm Password" autocomplete="off">
+                  <label for="customer_name">Brand Name</label>
+                  <input type="text" class="form-control" id="name" name="name" placeholder="Brand Name" value="<?php echo $brands_data['name'] ?>" autocomplete="off">
                 </div>
               </div>
               <!-- /.box-body -->
-
               <div class="box-footer">
-                <button type="submit" class="btn btn-primary">Create New User</button>
-                <a href="<?php echo base_url('users/') ?>" class="btn btn-warning">Back</a>
+                <button type="submit" class="btn btn-primary">Update Brand</button>
+                <a href="<?php echo base_url('settings/brands') ?>" class="btn btn-warning">Back</a>
               </div>
             </form>
           </div>
@@ -89,9 +62,7 @@
 
 <script type="text/javascript">
   $(document).ready(function() {
-    $("#groups").select2();
 
-    $("#userMainNav").addClass('active');
-    
+    $("#settingMainNav").addClass('active');
   });
 </script>
