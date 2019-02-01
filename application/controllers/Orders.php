@@ -28,9 +28,9 @@ class Orders extends Admin_Controller
 	*/
 	public function index()
 	{
-		if(!in_array('viewOrder', $this->permission)) {
-            redirect('dashboard', 'refresh');
-        }
+// 		if(!in_array('viewOrder', $this->permission)) {
+//             redirect('dashboard', 'refresh');
+//         }
 
 		$this->data['page_title'] = 'Manage Orders';
 		$this->render_template('orders/index', $this->data);		
@@ -42,9 +42,9 @@ class Orders extends Admin_Controller
 	*/
 	public function fetchOrdersData()
 	{
-		if(!in_array('viewOrder', $this->permission)) {
-            redirect('dashboard', 'refresh');
-        }
+// 		if(!in_array('viewOrder', $this->permission)) {
+//             redirect('dashboard', 'refresh');
+//         }
 
 		$result = array('data' => array());
 
@@ -103,9 +103,9 @@ class Orders extends Admin_Controller
 	*/
 	public function create()
 	{
-		if(!in_array('createOrder', $this->permission)) {
-            redirect('dashboard', 'refresh');
-        }
+// 		if(!in_array('createOrder', $this->permission)) {
+//             redirect('dashboard', 'refresh');
+//         }
 
 		$this->data['page_title'] = 'Add Order';
 

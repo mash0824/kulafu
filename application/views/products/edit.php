@@ -5,13 +5,10 @@
   <!-- Content Header (Page header) -->
   <section class="content-header">
     <h1>
-      Manage
-      <small>Products</small>
+      <h1>
+        Edit <?php echo $product_data['name'] ?>
+      </h1>
     </h1>
-    <ol class="breadcrumb">
-      <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-      <li class="active">Products</li>
-    </ol>
   </section>
 
   <!-- Main content -->
@@ -36,76 +33,80 @@
 
 
         <div class="box">
-          <div class="box-header">
-            <h3 class="box-title">Add Product</h3>
-          </div>
           <!-- /.box-header -->
           <form role="form" action="" method="post" enctype="multipart/form-data">
               <div class="box-body">
 
-                <?php echo validation_errors(); ?>
-
-                <div class="form-group">
-                  <label>Image Preview: </label>
-                  <img src="<?php echo base_url() . $product_data['image'] ?>" width="150" height="150" class="img-circle">
-                </div>
-
-                <div class="form-group">
-
-                  <label for="product_image">Image</label>
-                  <div class="kv-avatar">
-                      <div class="file-loading">
-                          <input id="product_image" name="product_image" type="file">
-                      </div>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="product_name">Product name</label>
-                  <input type="text" class="form-control" id="product_name" name="product_name" placeholder="Enter product name" autocomplete="off" value="<?php echo !empty($this->input->post('product_name')) ?:$product_data['name'] ?>" />
-                </div>
-
-                <div class="form-group">
-                  <label for="price">Price</label>
-                  <input type="text" class="form-control" id="price" name="price" placeholder="Enter price" autocomplete="off" value="<?php echo !empty($this->input->post('price')) ?:$product_data['price'] ?>"/>
-                </div>
-
-                <div class="form-group">
-                  <label for="description">Description</label>
-                  <textarea type="text" class="form-control" id="description" name="description" placeholder="Enter 
-                  description" autocomplete="off">
-                  <?php echo !empty($this->input->post('description')) ?:$product_data['description'] ?>
-                  </textarea>
-                </div>
-
-                <div class="form-group">
-                  <label for="category">Category</label>
-                  <?php $category_data = json_decode($product_data['category_id']); ?>
-                  <select class="form-control select_group" id="category" name="category[]" multiple="multiple">
-                    <?php foreach ($category as $k => $v): ?>
-                      <option value="<?php echo $v['id'] ?>" <?php if(in_array($v['id'], $category_data)) { echo 'selected="selected"'; } ?>><?php echo $v['name'] ?></option>
-                    <?php endforeach ?>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label for="store">Store</label>
-                  <?php $store_data = json_decode($product_data['store_id']); ?>
-                  <select class="form-control select_group" id="store" name="store[]" multiple="multiple">
-                    <?php foreach ($stores as $k => $v): ?>
-                      <option value="<?php echo $v['id'] ?>" <?php if(in_array($v['id'], $store_data)) { echo 'selected="selected"'; } ?>><?php echo $v['name'] ?></option>
-                    <?php endforeach ?>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label for="store">Active</label>
-                  <select class="form-control" id="active" name="active"> 
-                    <option value="1" <?php if($product_data['active'] == 1) { echo 'selected="selected"'; } ?>>Yes</option>
-                    <option value="2" <?php if($product_data['active'] == 2) { echo 'selected="selected"'; } ?>>No</option>
-                  </select>
-                </div>
-
+                <?php if(!empty(validation_errors())) { ?>
+				<div class="alert alert-error alert-dismissible" role="alert">
+              		<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                	<?php echo validation_errors(); ?>
+                	</div>
+				<?php } ?>
+				
+				
+				<div class="col-xs-12 col-md-12" ">
+					<div class="col-xs-12">
+                        <div class="form-group col-md-3 col-xs-12">
+        					<label for="pd_disp_id">Product ID</label>
+                          <input type="text" class="form-control" id="pd_disp_id" name="pd_disp_id" placeholder="" autocomplete="off" value="<?php echo $product_data['pd_disp_id'];?>" disabled />
+                        </div>
+    				</div>
+    				<div class="col-xs-12">
+                        <div class="form-group col-md-3 col-xs-12">
+                          <label for="sku">Supplier SKU</label>
+                          <input type="text" class="form-control" id="sku" name="sku" placeholder="Enter Supplier SKU" autocomplete="off" value="<?php echo $product_data['sku'] ?>" />
+                        </div>
+                        
+                        <div class="form-group col-md-3 col-xs-12">
+                          <label for="brand_id">Brand</label>
+                          <select class="form-control select_group" id="brand_id" name="brand_id">
+                          	<option value=""></option>
+                            <?php foreach ($brands as $k => $v): ?>
+                              <option value="<?php echo $v['id'] ?>" <?php if($v['id'] == $product_data['brand_id']) { echo 'selected="selected"'; } ?>><?php echo $v['name'] ?></option>
+                            <?php endforeach ?>
+                          </select>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="form-group col-md-9 col-xs-12">
+                          <label for="name">Product name</label>
+                          <input type="text" class="form-control" id="name" name="name" placeholder="Enter product name" autocomplete="off" value="<?php echo $product_data['name'] ?>" />
+                        </div>
+                    </div>
+                    
+                    <div class="col-xs-12">
+                        <div class="form-group col-md-3 col-xs-12">
+                          <label for="unit_id">Unit of Measure</label>
+                          <select class="form-control select_group" id="unit_id" name="unit_id">
+                          	<option value=""></option>
+                            <?php foreach ($units as $k => $v): ?>
+                              <option value="<?php echo $v['id'] ?>" <?php if($v['id'] == $product_data['unit_id']) { echo 'selected="selected"'; } ?>><?php echo $v['name'] ?></option>
+                            <?php endforeach ?>
+                          </select>
+                        </div>
+                        <div class="form-group col-md-3 col-xs-12">
+                          <label for="max_quantity">Maximum Quantity</label>
+                          <input type="text" class="form-control" id="max_quantity" name="max_quantity" placeholder="eg. 0" autocomplete="off" value="<?php echo $product_data['max_quantity'] ?>" />
+                        </div>
+                        
+                        <div class="form-group col-md-3 col-xs-12">
+                          <label for="quantity_in_box">Quantity inside 1 box</label>
+                          <input type="text" class="form-control" id="quantity_in_box" name="quantity_in_box" placeholder="eg. 0" autocomplete="off" value="<?php echo $product_data['quantity_in_box'] ?>" />
+                        </div>
+                    </div>
+    				<div class="col-xs-12">
+                        <div class="form-group col-md-3 col-xs-12">
+                          <label for="price">Cost</label>
+                          <input type="text" class="form-control" id="cost" name="cost" placeholder="eg. 20.00" autocomplete="off" value="<?php echo $product_data['cost'] ?>"/>
+                        </div>
+                        
+                        <div class="form-group  col-md-3 col-xs-12">
+                          <label for="sale_price">Sale Price</label>
+                          <input type="text" class="form-control" id="sale_price" name="sale_price" placeholder="eg. 40.00" autocomplete="off" value="<?php echo $product_data['sale_price'] ?>"/>
+                        </div>
+                    </div>
+				</div>
               </div>
               <!-- /.box-body -->
 

@@ -44,7 +44,7 @@
                   <th>Customer ID</th>
                   <th>Customer Name</th>
                   <th>Contact Person</th>
-                  <?php if(in_array('updateGroup', $user_permission) || in_array('deleteGroup', $user_permission)): ?>
+                  <?php if(in_array('updateCustomer', $user_permission) || in_array('deleteCustomer', $user_permission)): ?>
                     <th>Action</th>
                   <?php endif; ?>
                 </tr>

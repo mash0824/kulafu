@@ -20,25 +20,9 @@
         <?php endif; ?>
 
         <?php if(in_array('createProduct', $user_permission) || in_array('updateProduct', $user_permission) || in_array('viewProduct', $user_permission) || in_array('deleteProduct', $user_permission)): ?>
-            <li class="treeview" id="productMainNav">
-              <a href="#">
-                <i class="fa fa-files-o"></i>
-                <span>Products</span>
-                <span class="pull-right-container">
-                  <i class="fa fa-angle-left pull-right"></i>
-                </span>
-              </a>
-              <ul class="treeview-menu">
-                <?php if(in_array('createProduct', $user_permission)): ?>
-                  <li id="createProductSubMenu"><a href="<?php echo base_url('products/create') ?>"><i class="fa fa-angle-right"></i> Add product</a></li>
-                <?php endif; ?>
-                <?php if(in_array('updateProduct', $user_permission) || in_array('viewProduct', $user_permission) || in_array('deleteProduct', $user_permission)): ?>
-                <li id="manageProductSubMenu"><a href="<?php echo base_url('products') ?>"><i class="fa fa-angle-right"></i> Manage Products</a></li>
-                <?php endif; ?>
-              </ul>
-            </li>
+        	<li id="productMainNav"><a href="<?php echo base_url('products/') ?>"><i class="fa fa-industry"></i> <span>Products</span></a></li>
           <?php endif; ?>
-
+		<?php echo $this->warehouse_menu->build_menu(); ?>
           
           <?php if(in_array('createExpense', $user_permission) || in_array('updateExpense', $user_permission) || in_array('viewExpense', $user_permission) || in_array('deleteExpense', $user_permission)): ?>
           <li id="ExpenseMainNav"><a href="<?php echo base_url('expenses/') ?>"><i class="fa fa-files-o"></i> <span>Expenses</span></a></li>

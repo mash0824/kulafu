@@ -52,3 +52,51 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['default_controller'] = 'auth/login';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+$route['stocks-create'] = 'products/stocks_create';
+$route['warehouse-stocks-create/(:any)'] = 'products/warehouse_stocks_create/$1';
+$route['stocks-summary/(:any)'] = 'products/stock_summary/$1';
+$route['stocks-edit/(:any)'] = 'products/stocks_edit/$1';
+$route['warehouse/edit/(:any)'] = 'warehouses/edit/$1';
+$route['warehouse/view/(:any)'] = 'warehouses/view/$1';
+$route['warehouse/create'] = 'warehouses/create';
+$route['lists-of-products/(:any)/(:any)'] = 'warehouses/viewWarehouseProductsByStores/$1/$2';
+$route['warehouse-product-view/(:any)/(:any)/(:any)'] = 'products/viewstoreproduct/$1/$2/$3';
+
+//deliveries
+$route['deliveries/(:any)/(:any)']              = 'warehouses/deliveries/$1/$2';
+$route['deliveries-create/(:any)/(:any)']       = 'warehouses/deliveries_create/$1/$2';
+$route['deliveries-edit/(:any)/(:any)/(:any)']  = 'warehouses/deliveries_edit/$1/$2/$3';
+$route['deliveries-view/(:any)/(:any)/(:any)']  = 'warehouses/deliveries_view/$1/$2/$3'; //storename,$tid,$store_id
+$route['deliveries-confirm/(:any)/(:any)']      = 'warehouses/deliveries_confirm/$1/$2'; //storeid,$tid
+
+//pickups
+$route['pickups/(:any)/(:any)'] = 'warehouses/pickups/$1/$2';
+$route['pickups-create/(:any)/(:any)'] = 'warehouses/pickups_create/$1/$2';
+$route['pickups-edit/(:any)/(:any)/(:any)'] = 'warehouses/pickups_edit/$1/$2/$3';
+$route['pickups-view/(:any)/(:any)/(:any)'] = 'warehouses/pickups_view/$1/$2/$3';
+$route['pickups-confirm/(:any)/(:any)']      = 'warehouses/pickups_confirm/$1/$2'; //storeid,$tid
+//transfers
+$route['transfers/(:any)/(:any)'] = 'warehouses/transfers/$1/$2';
+$route['transfers-create/(:any)/(:any)'] = 'warehouses/transfers_create/$1/$2';
+$route['transfers-edit/(:any)/(:any)/(:any)'] = 'warehouses/transfers_edit/$1/$2/$3';
+$route['transfers-view/(:any)/(:any)/(:any)'] = 'warehouses/transfers_view/$1/$2/$3';
+$route['transfers-confirm/(:any)/(:any)']      = 'warehouses/transfers_confirm/$1/$2'; //storeid,$tid
+
+//withdrawals
+$route['withdrawals/(:any)/(:any)'] = 'warehouses/withdrawals/$1/$2';
+$route['withdrawals-create/(:any)/(:any)'] = 'warehouses/withdrawals_create/$1/$2';
+$route['withdrawals-edit/(:any)/(:any)/(:any)'] = 'warehouses/withdrawals_edit/$1/$2/$3';
+$route['withdrawals-view/(:any)/(:any)/(:any)'] = 'warehouses/withdrawals_view/$1/$2/$3';
+$route['withdrawals-confirm/(:any)/(:any)']      = 'warehouses/withdrawals_confirm/$1/$2'; //storeid,$tid
+
+
+
+
+
+
+
+
+
+
+
+

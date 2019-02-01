@@ -15,6 +15,8 @@ class Products extends Admin_Controller
 		$this->load->model('model_products');
 		$this->load->model('model_category');
 		$this->load->model('model_stores');
+		$this->load->model('model_brands');
+		$this->load->model('model_units');
 	}
 
     /* 
@@ -27,6 +29,10 @@ class Products extends Admin_Controller
         }
 
 		$this->render_template('products/index', $this->data);	
+	}
+	
+	public function checkExpiry($id){
+	    
 	}
 
     /*
@@ -42,47 +48,47 @@ class Products extends Admin_Controller
 		$result = array('data' => array());
 
 		$data = $this->model_products->getProductData();
+		$brand_data = $this->model_brands->getBrandsData();
+		$unit_data = $this->model_units->getUnitsData();
+		$brands = array();
+		$units = array();
+		
+		foreach ($brand_data as $key => $val) {
+		    $brands[$val["id"]] = $val['name']; 
+		}
+		foreach ($unit_data as $key => $val) {
+		    $units[$val["id"]] = $val['name']; 
+		}
 
 		foreach ($data as $key => $value) {
-            $store_ids = json_decode($value['store_id']);
-            
-            
-            $store_name = array();
-            foreach ($store_ids as $k => $v) {
-                $store_data = $this->model_stores->getStoresData($v);
-                $store_name[] = $store_data['name'];
-            }
-
-            $store_name = implode(', ', $store_name);
-            
-
 			// button
             $buttons = '';
-            if(in_array('updateProduct', $this->permission)) {
-    			$buttons .= '<a href="'.base_url('products/update/'.$value['id']).'" class="btn btn-default"><i class="fa fa-pencil"></i></a>';
+            $stock = $this->model_products->getInStockCount($value['id']);
+            $expiry = $this->model_products->getExpiryDetails($value['id']);
+            if(in_array('viewProduct', $this->permission)) {
+    			$buttons .= '<a href="'.base_url('products/view/'.$value['id']).'" class="">View</a>';
             }
-
-            if(in_array('deleteProduct', $this->permission)) { 
-    			$buttons .= ' <button type="button" class="btn btn-default" onclick="removeFunc('.$value['id'].')" data-toggle="modal" data-target="#removeModal"><i class="fa fa-trash"></i></button>';
+            if(in_array('deleteProduct', $this->permission) && isset($expiry[0]['store_id']) && $expiry[0]['store_id'] > 0) { 
+    			$buttons .= '&nbsp;<a href="'.base_url('stocks-withdraw/'.$expiry[0]['store_id']).'" class="redlink">Withdraw</a>';
             }
-			
-
-			$img = '<img src="'.base_url($value['image']).'" alt="'.$value['name'].'" class="img-circle" width="50" height="50" />';
-
-            $availability = ($value['active'] == 1) ? '<span class="label label-success">Active</span>' : '<span class="label label-warning">Inactive</span>';
-
+            
 			$result['data'][$key] = array(
-				$img,
+				$value['sku'],
 				$value['name'],
-                $value['price'],
-				$store_name,
-                $availability,
+                (($value['brand_id'] > 0) ? $brands[$value['brand_id']] : "") ,
+				(isset($stock[0]['stock_count']) ? ($stock[0]['stock_count'] - $stock[0]['less_count']) : 0),
+		        (($value['unit_id'] > 0) ? $units[$value['unit_id']] : "") ,  
+                $value['sale_price'],
+                $value['cost'],
+                (isset($expiry[0]['product_id']) ? "<span class='expiring'>Expiring</span>" : "<span class='normal'>Normal</span>"),
 				$buttons
 			);
 		} // /foreach
 
 		echo json_encode($result);
 	}	
+	
+	
     
     /*
     * view the product based on the store 
@@ -179,23 +185,25 @@ class Products extends Admin_Controller
             redirect('dashboard', 'refresh');
         }
 
-		$this->form_validation->set_rules('product_name', 'Product name', 'trim|required');
-		$this->form_validation->set_rules('price', 'Price', 'trim|required|numeric');
-		$this->form_validation->set_rules('active', 'Active', 'trim|required');
+		$this->form_validation->set_rules('name', 'Product name', 'trim|required');
+		$this->form_validation->set_rules('sku', 'Supplier SKU', 'trim|required');
+		$this->form_validation->set_rules('cost', 'Price', 'trim|required|decimal');
+		$this->form_validation->set_rules('sale_price', 'Price', 'trim|required|decimal');
 		
+		$nextID = $this->model_products->getNextIncrementID();
+		$pd_disp_id = "PD-".sprintf("%011s",$nextID[0]['nextId']);
 	
         if ($this->form_validation->run() == TRUE) {
-            // true case
-        	$upload_image = $this->upload_image();
-
         	$data = array(
-        		'name' => $this->input->post('product_name'),
-        		'price' => $this->input->post('price'),
-        		'image' => $upload_image,
-        		'description' => $this->input->post('description'),
-        		'category_id' => json_encode($this->input->post('category')),
-                'store_id' => json_encode($this->input->post('store')),
-        		'active' => $this->input->post('active'),
+        		'name' => $this->input->post('name'),
+        		'cost' => $this->input->post('cost'),
+        		'sku' => $this->input->post('sku'),
+        		'max_quantity' => $this->input->post('max_quantity'),
+        		'quantity_in_box' => $this->input->post('quantity_in_box'),
+        		'unit_id' => $this->input->post('unit_id'),
+        		'brand_id' => $this->input->post('brand_id'),
+        		'sale_price' => $this->input->post('sale_price'),
+        		'pd_disp_id' => $pd_disp_id,
         	);
 
         	$create = $this->model_products->create($data);
@@ -213,48 +221,51 @@ class Products extends Admin_Controller
 
         	// attributes 
         	// $attribute_data = $this->model_attributes->getActiveAttributeData();
-
-
         	// $this->data['attributes'] = $attributes_final_data;
 			// $this->data['brands'] = $this->model_brands->getActiveBrands();        	
-			$this->data['category'] = $this->model_category->getActiveCategory();        	
-			$this->data['stores'] = $this->model_stores->getActiveStore();        	
+			$this->data['stores'] = $this->model_stores->getActiveStore();  
+			$this->data['brands'] = $this->model_brands->getBrandsData();
+			$this->data['units'] = $this->model_units->getUnitsData();
+			 // false case
+            $data = array(
+                'pd_disp_id' => $pd_disp_id
+            );
+            $this->data['products_data'] = $data;
 
             $this->render_template('products/create', $this->data);
         }	
 	}
-
-    /*
-    * This function is invoked from another function to upload the image into the assets folder
-    * and returns the image path
-    */
-	public function upload_image()
-    {
-    	// assets/images/product_image
-        $config['upload_path'] = 'assets/images/product_image';
-        $config['file_name'] =  uniqid();
-        $config['allowed_types'] = 'gif|jpg|png';
-        $config['max_size'] = '1000';
-
-        // $config['max_width']  = '1024';s
-        // $config['max_height']  = '768';
-
-        $this->load->library('upload', $config);
-        if ( ! $this->upload->do_upload('product_image'))
-        {
-            $error = $this->upload->display_errors();
-            return $error;
-        }
-        else
-        {
-            $data = array('upload_data' => $this->upload->data());
-            $type = explode('.', $_FILES['product_image']['name']);
-            $type = $type[count($type) - 1];
-            
-            $path = $config['upload_path'].'/'.$config['file_name'].'.'.$type;
-            return ($data == true) ? $path : false;            
-        }
-    }
+	
+	public function view($id){
+	    if(!in_array('viewProduct', $this->permission)) {
+	        redirect('dashboard', 'refresh');
+	    }
+	     
+	    if($id) {
+	        $customer_data = $this->model_products->getProductData($id);
+	        $stock_data = $this->model_products->getStockHistory($id);
+	        $this->data['product_data'] = $customer_data;
+	        $this->data['stock_data'] = $stock_data;
+	        $this->render_template('products/view', $this->data);
+	    }     
+	}
+	
+	public function viewstoreproduct($name,$product_id,$store_id){
+	    if(!in_array('viewProduct', $this->permission)) {
+	        redirect('dashboard', 'refresh');
+	    }
+	    
+	    if($product_id) {
+	        $warehouseNameLink = $name;
+	        $customer_data = $this->model_products->getProductData($product_id);
+	        $stock_data = $this->model_products->getStockHistory($product_id,$store_id);
+	        $this->data['product_data'] = $customer_data;
+	        $this->data['stock_data'] = $stock_data;
+	        $this->data['warehouseNameLink'] = $warehouseNameLink;
+	        $this->data['store_id'] = $store_id;
+	        $this->render_template('products/view-store-products', $this->data);
+	    }
+	}
 
     /*
     * If the validation is not valid, then it redirects to the edit product page 
@@ -271,30 +282,23 @@ class Products extends Admin_Controller
             redirect('dashboard', 'refresh');
         }
 
-        $this->form_validation->set_rules('product_name', 'Product name', 'trim|required');
-        $this->form_validation->set_rules('price', 'Price', 'trim|required');
-        $this->form_validation->set_rules('active', 'active', 'trim|required');
+        $this->form_validation->set_rules('name', 'Product name', 'trim|required');
+		$this->form_validation->set_rules('sku', 'Supplier SKU', 'trim|required');
+		$this->form_validation->set_rules('cost', 'Price', 'trim|required|decimal');
+		$this->form_validation->set_rules('sale_price', 'Price', 'trim|required|decimal');
 
         if ($this->form_validation->run() == TRUE) {
             // true case
-            
             $data = array(
-                'name' => $this->input->post('product_name'),
-                'price' => $this->input->post('price'),
-                'description' => $this->input->post('description'),
-                'category_id' => json_encode($this->input->post('category')),
-                'store_id' => json_encode($this->input->post('store')),
-                'active' => $this->input->post('active'),
+                'name' => $this->input->post('name'),
+        		'cost' => $this->input->post('cost'),
+        		'sku' => $this->input->post('sku'),
+        		'max_quantity' => $this->input->post('max_quantity'),
+        		'quantity_in_box' => $this->input->post('quantity_in_box'),
+        		'unit_id' => $this->input->post('unit_id'),
+        		'brand_id' => $this->input->post('brand_id'),
+        		'sale_price' => $this->input->post('sale_price'),
             );
-
-            
-            if($_FILES['product_image']['size'] > 0) {
-                $upload_image = $this->upload_image();
-                $upload_image = array('image' => $upload_image);
-                
-                $this->model_products->update($upload_image, $product_id);
-            }
-
             $update = $this->model_products->update($data, $product_id);
             if($update == true) {
                 $this->session->set_flashdata('success', 'Successfully updated');
@@ -306,15 +310,181 @@ class Products extends Admin_Controller
             }
         }
         else {
-                    
-            $this->data['category'] = $this->model_category->getActiveCategory();           
-            $this->data['stores'] = $this->model_stores->getActiveStore();          
-
             $product_data = $this->model_products->getProductData($product_id);
             $this->data['product_data'] = $product_data;
+            $this->data['stores'] = $this->model_stores->getActiveStore();
+            $this->data['brands'] = $this->model_brands->getBrandsData();
+            $this->data['units'] = $this->model_units->getUnitsData();
             $this->render_template('products/edit', $this->data); 
         }   
 	}
+	
+	public function stocks_edit($stock_id) {
+	    if(!in_array('updateProduct', $this->permission)) {
+	        redirect('dashboard', 'refresh');
+	    }
+	    
+	    $this->form_validation->set_rules('sales_invoice_id', 'Sales Invoice', 'trim|required');
+	    $this->form_validation->set_rules('store_id', 'Destination', 'trim|required');
+	    $this->form_validation->set_rules('product_id[]', 'Product name', 'trim|required');
+	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric');
+	    $this->form_validation->set_rules('expiry_date[]', 'Expiry Date', 'trim|required');
+	    
+	    if ($this->form_validation->run() == TRUE) {
+	        $stock_data = array(
+	            'sales_invoice_id' => $this->input->post('sales_invoice_id'),
+	            'store_id' => $this->input->post('store_id'),
+	        );
+	        //update stocks
+	        $this->model_products->updateStocks($stock_data,$stock_id);
+	        $count_product = count($this->input->post('product_id'));
+	        if($count_product > 0) {
+	            //remove all stock and enter new one
+	            $this->model_products->removeStocks($stock_id);
+    	        for($x = 0; $x < $count_product; $x++) {
+    	            $product_data = $this->model_products->getProductData($this->input->post('product_id')[$x]);
+    	            $items = array(
+    	                'stock_id'     => $stock_id,
+    	                'product_id'   => $this->input->post('product_id')[$x],
+    	                'quantity'     => $this->input->post('quantity')[$x],
+    	                'expiry_date'  => date("Y-m-d",strtotime($this->input->post('expiry_date')[$x])),
+    	                'cost'         => $product_data['cost'],
+    	                'sale_price'   => $product_data['sale_price']
+    	            );
+    	            $this->model_products->createStockDetails($items);
+    	        }
+    	        redirect('stocks-summary/'.$stock_id, 'refresh');
+	        }
+	        else {
+	           $stock_data = $this->model_products->getStockSummary($stock_id);
+	           $this->data['products'] = $this->model_products->getActiveProductData();
+	           $this->data['stock_data'] = $stock_data;
+	           $this->data['stock_id'] = $stock_id;
+	           $this->data['store'] = $this->model_stores->getStoresData($stock_data[0]['store_id']);
+	           $this->data['stores'] = $this->model_stores->getStoresData();
+	           $this->render_template('products/stock-edit', $this->data);
+	        }
+	        
+	    }
+	    else {
+	        $stock_data = $this->model_products->getStockSummary($stock_id);
+	        $this->data['products'] = $this->model_products->getActiveProductData();
+	        $this->data['stock_data'] = $stock_data;
+	        $this->data['stock_id'] = $stock_id;
+	        $this->data['store'] = $this->model_stores->getStoresData($stock_data[0]['store_id']);
+	        $this->data['stores'] = $this->model_stores->getStoresData();
+	        $this->render_template('products/stock-edit', $this->data);
+	    }
+	     
+	    
+	}
+	
+	public function stocks_create(){
+	    if(!in_array('updateProduct', $this->permission)) {
+	        redirect('dashboard', 'refresh');
+	    }
+	    
+	    $this->form_validation->set_rules('sales_invoice_id', 'Sales Invoice', 'trim|required');
+	    $this->form_validation->set_rules('store_id', 'Destination', 'trim|required');
+	    $this->form_validation->set_rules('product_id[]', 'Product name', 'trim|required');
+	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric');
+	    $this->form_validation->set_rules('expiry_date[]', 'Expiry Date', 'trim|required');
+	    
+	    if ($this->form_validation->run() == TRUE) {
+	        
+	        $user_id = $this->session->userdata('id');
+	        $create_date = date("Y-m-d H:i:s");
+	        $stock_data = array(
+	            'sales_invoice_id' => $this->input->post('sales_invoice_id'),
+	            'store_id' => $this->input->post('store_id'),
+	            'create_date' => $create_date,
+	            'user_id' => $user_id
+	        );
+	        
+	        $stock_id = $this->model_products->createStock($stock_data);
+	        $count_product = count($this->input->post('product_id'));
+	        for($x = 0; $x < $count_product; $x++) {
+	            $product_data = $this->model_products->getProductData($this->input->post('product_id')[$x]);
+	            $items = array(
+	                'stock_id'     => $stock_id,
+	                'product_id'   => $this->input->post('product_id')[$x],
+	                'quantity'     => $this->input->post('quantity')[$x],
+	                'expiry_date'  => date("Y-m-d",strtotime($this->input->post('expiry_date')[$x])),
+	                'cost'         => $product_data['cost'],
+	                'sale_price'   => $product_data['sale_price'],
+	            );
+	            $this->model_products->createStockDetails($items);
+	        }
+	        redirect('stocks-summary/'.$stock_id, 'refresh');
+	    }
+	    else {
+    	    $this->data['stores'] = $this->model_stores->getActiveStore();
+    	    $this->data['products'] = $this->model_products->getActiveProductData();  
+    	    $this->render_template('products/stock-create', $this->data);
+	    }
+	}
+	
+	public function warehouse_stocks_create($store_id){
+	    if(!in_array('updateProduct', $this->permission)) {
+	        redirect('dashboard', 'refresh');
+	    }
+	     
+	    $this->form_validation->set_rules('sales_invoice_id', 'Sales Invoice', 'trim|required');
+	    $this->form_validation->set_rules('store_id', 'Destination', 'trim|required');
+	    $this->form_validation->set_rules('product_id[]', 'Product name', 'trim|required');
+	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric');
+	    $this->form_validation->set_rules('expiry_date[]', 'Expiry Date', 'trim|required');
+	     
+	    if ($this->form_validation->run() == TRUE) {
+	         
+	        $user_id = $this->session->userdata('id');
+	        $create_date = date("Y-m-d H:i:s");
+	        $stock_data = array(
+	            'sales_invoice_id' => $this->input->post('sales_invoice_id'),
+	            'store_id' => $this->input->post('store_id'),
+	            'create_date' => $create_date,
+	            'user_id' => $user_id
+	        );
+	         
+	        $stock_id = $this->model_products->createStock($stock_data);
+	        $count_product = count($this->input->post('product_id'));
+	        for($x = 0; $x < $count_product; $x++) {
+	            $product_data = $this->model_products->getProductData($this->input->post('product_id')[$x]);
+	            $items = array(
+	                'stock_id'     => $stock_id,
+	                'product_id'   => $this->input->post('product_id')[$x],
+	                'quantity'     => $this->input->post('quantity')[$x],
+	                'expiry_date'  => date("Y-m-d",strtotime($this->input->post('expiry_date')[$x])),
+	                'cost'         => $product_data['cost'],
+	                'sale_price'   => $product_data['sale_price'],
+	            );
+	            $this->model_products->createStockDetails($items);
+	        }
+	        redirect('stocks-summary/'.$stock_id, 'refresh');
+	    }
+	    else {
+	        $this->data['stores'] = $this->model_stores->getActiveStore();
+	        $this->data['store_id'] = $store_id;
+	        $this->data['products'] = $this->model_products->getActiveProductData();
+	        $this->render_template('products/stock-create-warehouse', $this->data);
+	    }
+	}
+	
+	
+	public function stock_summary($stock_id){
+	    if(!in_array('viewProduct', $this->permission)) {
+	        redirect('dashboard', 'refresh');
+	    }
+	    
+	    if($stock_id) {
+	        $stock_data = $this->model_products->getStockSummary($stock_id);
+	        $this->data['stock_data'] = $stock_data;
+	        $this->data['stock_id'] = $stock_id;
+	        $this->data['stores'] = $this->model_stores->getStoresData($stock_data[0]['store_id']);
+            $this->render_template('products/stock-summary', $this->data);
+	    }
+	}
+	
 
     /*
     * It removes the data from the database
@@ -330,7 +500,11 @@ class Products extends Admin_Controller
 
         $response = array();
         if($product_id) {
-            $delete = $this->model_products->remove($product_id);
+            //$delete = $this->model_products->remove($product_id);
+            $data = array(
+                'is_deleted' => 1,
+            );
+            $delete = $this->model_products->update($data, $product_id);
             if($delete == true) {
                 $response['success'] = true;
                 $response['messages'] = "Successfully removed"; 
@@ -348,4 +522,43 @@ class Products extends Admin_Controller
         echo json_encode($response);
 	}
 
+	public function removeProductStore($product_id,$store_id)
+	{
+	    if(!in_array('deleteProduct', $this->permission)) {
+	        redirect('dashboard', 'refresh');
+	    }
+	    $response = array();
+	    if($product_id && $store_id) {
+	        //$delete = $this->model_products->updateStockDetails($product_id);
+	        $ids = $this->model_products->removeStocksFromWarehouse($product_id, $store_id);
+	        if(!empty($ids)) {
+    	        $data = array(
+    	            'is_deleted' => 1,
+    	        );
+    	        foreach ($ids as $key => $val) {
+    	            $delete = $this->model_products->updateStockDetails($data, $val['id']);
+    	        }
+    	        //
+    	        if($delete == true) {
+    	            $response['success'] = true;
+    	            $response['messages'] = "Successfully removed";
+    	        }
+    	        else {
+    	            $response['success'] = false;
+    	            $response['messages'] = "Error in the database while removing the product information";
+    	        }
+	        }
+	        else {
+	            $response['success'] = false;
+	            $response['messages'] = "Error in the database while removing the product information";
+	        }
+	    }
+	    else {
+	        $response['success'] = false;
+	        $response['messages'] = "Refresh the page again!!";
+	    }
+	
+	    echo json_encode($response);
+	}
+	
 }

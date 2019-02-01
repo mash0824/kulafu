@@ -39,6 +39,7 @@ class Dashboard extends Admin_Controller
 	
 	
 	    $store_data = $this->model_stores->getStoresData();
+	    
 	
 	
 	    $store_id = $store_data[0]['id'];
@@ -53,7 +54,7 @@ class Dashboard extends Admin_Controller
 	
 	    $order_data = $this->model_reports->getStoreWiseOrderData($today_year, $store_id);
 	    $this->data['report_years'] = $this->model_reports->getOrderYear();
-	
+	    $selected_store = $this->model_stores->getStoresData($store_id);
 	
 	    $final_parking_data = array();
 	    foreach ($order_data as $k => $v) {
@@ -72,10 +73,15 @@ class Dashboard extends Admin_Controller
 	        }
 	        	
 	    }
+	    
+	    $top = $this->model_reports->getTopProducts($store_id);
+	    
 	
 	    $this->data['selected_store'] = $store_id;
 	    $this->data['store_data'] = $store_data;
+	    $this->data['store'] = $selected_store;
 	    $this->data['selected_year'] = $today_year;
+	    $this->data['top'] = $top;
 	    $this->data['company_currency'] = $this->company_currency();
 	    $this->data['results'] = $final_parking_data;
 	

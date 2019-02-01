@@ -15,7 +15,7 @@
       <div class="row">
 
         <div class="col-md-12 col-xs-12">
-          <form class="form-inline" action="<?php echo base_url('reports/storewise') ?>" method="POST">
+          <form class="form-inline" action="<?php echo base_url('dashboard/') ?>" method="POST">
             <div class="form-group">
               <label for="date">Year</label>
               <select class="form-control" name="select_year" id="select_year">
@@ -25,7 +25,7 @@
               </select>
             </div>
             <div class="form-group">
-              <label for="date">Store</label>
+              <label for="date">Warehouse</label>
               <select class="form-control" name="select_store" id="select_store">
                 <option value="">Select store</option>
                 <?php foreach ($store_data as $key => $value): ?>
@@ -33,7 +33,8 @@
                 <?php endforeach ?>
               </select>
             </div>
-            <button type="submit" class="btn btn-default">Submit</button>
+            <button type="submit" class="btn btn-primary">Go</button>
+            <a href="#" onclick="myFunction()" class="btn btn-primary pull-right">Print</a>
           </form>
         </div>
 
@@ -54,9 +55,9 @@
             </div>
           <?php endif; ?>
 
-          <div class="box">
+          <div class="box" id="printbox">
             <div class="box-header">
-              <h3 class="box-title">Total Paid Orders - Report</h3>
+              <h3 class="box-title">Monthly Sales Per Year - <?php echo $store['name'];?></h3>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
@@ -68,43 +69,69 @@
           </div>
           <!-- /.box -->
           <div class="box">
-            <div class="box-header">
-              <h3 class="box-title">Total Paid Orders - Report Data</h3>
-            </div>
             <!-- /.box-header -->
             <div class="box-body">
-              <table id="datatables" class="table table-bordered table-striped">
-                <thead>
-                <tr>
-                  <th>Month - Year</th>
-                  <th>Amount</th>
-                </tr>
-                </thead>
-                <tbody>
-
-                  <?php foreach ($results as $k => $v): ?>
-                    <tr>
-                      <td><?php echo $k; ?></td>
-                      <td><?php 
-                      
-                        echo $company_currency .' ' . $v;
-                        //echo $v;
-                      
-                      ?></td>
-                    </tr>
-                  <?php endforeach ?>
-                  
-                </tbody>
-                <tbody>
-                  <tr>
-                    <th>Total Amount</th>
-                    <th>
-                      <?php echo $company_currency . ' ' . array_sum($results); ?>
-                      <?php //echo array_sum($results); ?>
-                    </th>
-                  </tr>
-                </tbody>
-              </table>
+                <div class="col-md-6 col-sm-12">
+                	 <table id="datatables" class="table table-bordered" style="background-color:#fff; ">
+                        <thead>
+                        <tr>
+                          <th>Month - Year</th>
+                          <th>Total Sales</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+        
+                          <?php foreach ($results as $k => $v): ?>
+                            <tr>
+                              <td><?php echo $k; ?></td>
+                              <td><?php 
+                                echo $company_currency .' ' . $v;
+                                //echo $v;
+                              ?></td>
+                            </tr>
+                          <?php endforeach ?>
+                          
+                        </tbody>
+                        <tbody>
+                          <tr>
+                            <th>Total Annual Sales</th>
+                            <th>
+                              <?php echo $company_currency . ' ' . array_sum($results); ?>
+                              <?php //echo array_sum($results); ?>
+                            </th>
+                          </tr>
+                        </tbody>
+                      </table>
+                
+                </div>
+                
+                <div class="col-md-6 col-sm-12">
+                	<h4>Top 10 Most-Performing Products - <?php echo $store['name'];?></h4>
+                	<table id="datatables" class="table table-bordered" style="background-color:#fff; ">
+                        <thead>
+                        <tr>
+                          <th>Supplier SKU</th>
+                          <th>Product Name</th>
+                          <th>Items Sold</th>
+                          <th>Unit</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+        
+                          <?php foreach ($top as $k => $v): ?>
+                            <tr>
+                              <td><?php echo $v['sku']; ?></td>
+                              <td><?php echo $v['product_name']; ?></td>
+                              <td><?php echo $v['item_sold']; ?></td>
+                              <td><?php echo $v['unit_name']; ?></td>
+                            </tr>
+                          <?php endforeach ?>
+                        </tbody>
+                      </table>
+                
+                </div>
+            
+             
             </div>
             <!-- /.box-body -->
           </div>
@@ -123,7 +150,7 @@
   <script type="text/javascript">
 
     $(document).ready(function() {
-      $("#ReportMainNav").addClass('active');
+      $("#dashboardMainMenu").addClass('active');
       $("#storeReportSubMenu").addClass('active');
     }); 
 
@@ -190,5 +217,8 @@
 
     barChartOptions.datasetFill = false
     barChart.Bar(barChartData, barChartOptions)
-  })
+  });
+    function myFunction() {
+  	  window.print();
+  	}
   </script>

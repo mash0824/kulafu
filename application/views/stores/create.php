@@ -5,7 +5,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Edit <?php echo $customers_data['customer_name'] ?>
+        Create New Warehouse
       </h1>
     </section>
 
@@ -28,7 +28,7 @@
           <?php endif; ?>
 
           <div class="box">
-            <form role="form" action="<?php base_url('customers/edit') ?>" method="post">
+            <form role="form" action="<?php base_url('users/create') ?>" method="post">
               <div class="box-body">
                 <?php if(!empty(validation_errors())) { ?>
 				<div class="alert alert-error alert-dismissible" role="alert">
@@ -37,33 +37,24 @@
                 	</div>
 				<?php } ?>
                 <div class="form-group">
-                  <label for="cs_id">Customer ID</label>
-                  <input type="text" class="form-control" id="cs_id" name="cs_id" placeholder="Customer ID" value="<?php echo $customers_data['cs_id'] ?>" disabled autocomplete="off">
+                  <label for="cs_id">Warehouse ID</label>
+                  <input type="text" class="form-control" id="cs_id" name="cs_id" placeholder="Warehouse ID" value="<?php echo $warehouses_data['warehouse_disp_id'];?>" disabled autocomplete="off">
                 </div>
                 
                 <div class="form-group">
-                  <label for="customer_name">Customer Name</label>
-                  <input type="text" class="form-control" id="customer_name" name="customer_name" placeholder="Customer Name" value="<?php echo $customers_data['customer_name'] ?>" autocomplete="off">
+                  <label for="name">Warehouse</label>
+                  <input type="text" class="form-control" id="name" name="name" placeholder="Warehouse Name" value="" autocomplete="off">
                 </div>
                 
                 <div class="form-group">
-                  <label for="address">Delivery Address</label>
-                  <textarea type="text" class="form-control" id="address" name="address" placeholder="Enter Company Address" autocomplete="off"><?php echo $customers_data['address'] ?>
-                  </textarea>
+                  <label for="address">Address</label>
+                  <textarea type="text" class="form-control" id="address" name="address" placeholder="Enter Address" autocomplete="off"></textarea>
                 </div>
-				<div class="form-group">
-                  <label for="contact_person">Contact Person</label>
-                  <input type="text" class="form-control" id="contact_person" name="contact_person" placeholder="Contact Person" value="<?php echo $customers_data['contact_person'] ?>" autocomplete="off">
-                </div>
-                <div class="form-group">
-                  <label for="email">Email</label>
-                  <input type="email" class="form-control" id="email" name="email" placeholder="Email" value="<?php echo $customers_data['email'] ?>" autocomplete="off">
-                </div>                
               </div>
               <!-- /.box-body -->
               <div class="box-footer">
-                <button type="submit" class="btn btn-primary">Update Customer</button>
-                <a href="<?php echo base_url('customers/') ?>" class="btn btn-warning">Back</a>
+                <button type="submit" class="btn btn-primary">Create Warehouse</button>
+                <a href="<?php echo base_url('warehouses/') ?>" class="btn btn-warning">Back</a>
               </div>
             </form>
           </div>
@@ -82,6 +73,6 @@
 <script type="text/javascript">
   $(document).ready(function() {
 
-    $("#customerMainNav").addClass('active');
+    $("#warehouseMainNav").addClass('active');
   });
 </script>
