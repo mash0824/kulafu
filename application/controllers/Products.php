@@ -69,7 +69,7 @@ class Products extends Admin_Controller
     			$buttons .= '<a href="'.base_url('products/view/'.$value['id']).'" class="">View</a>';
             }
             if(in_array('deleteProduct', $this->permission) && isset($expiry[0]['store_id']) && $expiry[0]['store_id'] > 0) { 
-    			$buttons .= '&nbsp;<a href="'.base_url('stocks-withdraw/'.$expiry[0]['store_id']).'" class="redlink">Withdraw</a>';
+    			$buttons .= '&nbsp;<a href="'.base_url('withdrawals-create/manage/'.$expiry[0]['store_id']).'" class="redlink">Withdraw</a>';
             }
             
 			$result['data'][$key] = array(

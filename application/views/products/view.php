@@ -131,7 +131,7 @@
                         <td><?php echo $v['stock_status']; ?></td>
                         <td>
                            <?php if(in_array('updateProduct', $user_permission) && $v['stock_status_flag'] == 1): ?>
-                          <a href="<?php echo base_url('stocks-withdraw/'.$v['store_id']) ?>" class="">Withdraw</i></a>  
+                          <a href="<?php echo base_url('withdrawals-create/manage/'.$v['store_id']) ?>" class="">Withdraw</a>  
                           <?php endif; ?>
                         </td>
                       </tr>
