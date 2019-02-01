@@ -4,14 +4,17 @@
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
+      <div class="col-xs-12 col-sm-12 col-md-6">
       <h1>
-        Manage
-        <small>Users</small>
+        User Accounts
       </h1>
-      <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Users</li>
-      </ol>
+      </div>
+      
+      <?php if(in_array('createUser', $user_permission)): ?>
+      <div class="col-xs-12 col-sm-12 col-md-6 text-right">
+            <a href="<?php echo base_url('users/create') ?>" class="btn btn-primary">Create New User</a>
+       </div>
+          <?php endif; ?>
     </section>
 
     <!-- Main content -->
@@ -32,26 +35,18 @@
             </div>
           <?php endif; ?>
           
-          <?php if(in_array('createUser', $user_permission)): ?>
-            <a href="<?php echo base_url('users/create') ?>" class="btn btn-primary">Add User</a>
-            <br /> <br />
-          <?php endif; ?>
+          
 
 
           <div class="box">
-            <div class="box-header">
-              <h3 class="box-title">Manage Users</h3>
-            </div>
-            <!-- /.box-header -->
             <div class="box-body">
               <table id="userTable" class="table table-bordered table-striped">
                 <thead>
                 <tr>
                   <th>Username</th>
-                  <th>Email</th>
-                  <th>Name</th>
-                  <th>Phone</th>
                   <th>Group</th>
+                  <th>Email</th>
+                  
 
                   <?php if(in_array('updateUser', $user_permission) || in_array('deleteUser', $user_permission)): ?>
                   <th>Action</th>
@@ -63,19 +58,18 @@
                     <?php foreach ($user_data as $k => $v): ?>
                       <tr>
                         <td><?php echo $v['user_info']['username']; ?></td>
-                        <td><?php echo $v['user_info']['email']; ?></td>
-                        <td><?php echo $v['user_info']['firstname'] .' '. $v['user_info']['lastname']; ?></td>
-                        <td><?php echo $v['user_info']['phone']; ?></td>
                         <td><?php echo $v['user_group']['group_name']; ?></td>
+                        <td><?php echo $v['user_info']['email']; ?></td>
 
                         <?php if(in_array('updateUser', $user_permission) || in_array('deleteUser', $user_permission)): ?>
 
                         <td>
                           <?php if(in_array('updateUser', $user_permission)): ?>
-                            <a href="<?php echo base_url('users/edit/'.$v['user_info']['id']) ?>" class="btn btn-default"><i class="fa fa-edit"></i></a>
+                            <a href="<?php echo base_url('users/edit/'.$v['user_info']['id']) ?>" class="greenlink">edit</a>
                           <?php endif; ?>
+                          &nbsp;
                           <?php if(in_array('deleteUser', $user_permission)): ?>
-                            <a href="<?php echo base_url('users/delete/'.$v['user_info']['id']) ?>" class="btn btn-default"><i class="fa fa-trash"></i></a>
+                            <a href="<?php echo base_url('users/delete/'.$v['user_info']['id']) ?>" class="redlink">delete</a>
                           <?php endif; ?>
                         </td>
                       <?php endif; ?>

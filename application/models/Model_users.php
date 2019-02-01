@@ -19,6 +19,13 @@ class Model_users extends CI_Model
 		$query = $this->db->query($sql, array(1));
 		return $query->result_array();
 	}
+	
+	public function getUserDataByEmail($email)
+	{
+	        $sql = "SELECT * FROM users WHERE email = ?";
+	        $query = $this->db->query($sql, array($email));
+	        return $query->row_array();
+	}
 
 	public function getUserGroup($userId = null) 
 	{
@@ -37,7 +44,6 @@ class Model_users extends CI_Model
 
 	public function create($data = '', $group_id = null)
 	{
-
 		if($data && $group_id) {
 			$create = $this->db->insert('users', $data);
 

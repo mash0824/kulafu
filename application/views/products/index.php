@@ -4,14 +4,17 @@
 <div class="content-wrapper">
   <!-- Content Header (Page header) -->
   <section class="content-header">
-    <h1>
-      Manage
-      <small>Products</small>
-    </h1>
-    <ol class="breadcrumb">
-      <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-      <li class="active">Products</li>
-    </ol>
+  	<div class="col-xs-12 col-sm-12 col-md-6">
+      <h1>
+       	Products
+      </h1>
+      </div>
+      
+      <?php if(in_array('createProduct', $user_permission)): ?>
+      <div class="col-xs-12 col-sm-12 col-md-6 text-right">
+            <a href="<?php echo base_url('products/create') ?>" class="btn btn-primary">Add New Product</a>
+       </div>
+          <?php endif; ?>
   </section>
 
   <!-- Main content -->
@@ -34,28 +37,20 @@
           </div>
         <?php endif; ?>
 
-        <?php if(in_array('createProduct', $user_permission)): ?>
-          <a href="<?php echo base_url('products/create') ?>" class="btn btn-primary">Add Product</a>
-          
-        <?php endif; ?>
-
-        <a href="<?php echo base_url('products/viewproduct') ?>" class="btn btn-success">View Product</a>
-        
-        <br /> <br />
 
         <div class="box">
-          <div class="box-header">
-            <h3 class="box-title">Manage Products</h3>
-          </div>
           <!-- /.box-header -->
           <div class="box-body">
             <table id="manageTable" class="table table-bordered table-striped">
               <thead>
               <tr>
-                <th>Image</th>
+                <th>Supplier SKU</th>
                 <th>Product Name</th>
-                <th>Price</th>
-                <th>Store</th>
+                <th>Brand</th>
+                <th>In Stock</th>
+                <th>Unit</th>
+                <th>Sale Price</th>
+                <th>Cost</th>
                 <th>Status</th>
                 <?php if(in_array('updateProduct', $user_permission) || in_array('deleteProduct', $user_permission)): ?>
                   <th>Action</th>
@@ -78,7 +73,6 @@
   <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->
-
 <?php if(in_array('deleteProduct', $user_permission)): ?>
 <!-- remove brand modal -->
 <div class="modal fade" tabindex="-1" role="dialog" id="removeModal">
@@ -98,8 +92,6 @@
           <button type="submit" class="btn btn-primary">Save changes</button>
         </div>
       </form>
-
-
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->

@@ -5,13 +5,8 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Manage
-        <small>Users</small>
+        Edit <?php echo $user_data['username'] ?>
       </h1>
-      <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Users</li>
-      </ol>
     </section>
 
     <!-- Main content -->
@@ -33,15 +28,24 @@
           <?php endif; ?>
 
           <div class="box">
-            <div class="box-header">
-              <h3 class="box-title">Edit User</h3>
-            </div>
             <form role="form" action="<?php base_url('users/create') ?>" method="post">
               <div class="box-body">
-
-                <?php echo validation_errors(); ?>
+                <?php if(!empty(validation_errors())) { ?>
+				<div class="alert alert-error alert-dismissible" role="alert">
+              		<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                	<?php echo validation_errors(); ?>
+                	</div>
+				<?php } ?>
+                <div class="form-group">
+                  <label for="username">Username</label>
+                  <input type="text" class="form-control" id="username" name="username" placeholder="Username" value="<?php echo $user_data['username'] ?>" autocomplete="off">
+                </div>
 
                 <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" class="form-control" id="email" name="email" placeholder="Email" value="<?php echo $user_data['email'] ?>" autocomplete="off">
+                </div>                
+				<div class="form-group">
                   <label for="groups">Groups</label>
                   <select class="form-control" id="groups" name="groups">
                     <option value="">Select Groups</option>
@@ -52,61 +56,7 @@
                 </div>
 
                 <div class="form-group">
-                  <label for="groups">Store</label>
-                  <select class="form-control" id="store" name="store">
-                    <option value="">Select store</option>
-                    <?php foreach ($store_data as $k => $v): ?>
-                      <option value="<?php echo $v['id'] ?>" <?php if($user_data['store_id'] == $v['id']) { echo "selected='selected'"; } ?>><?php echo $v['name'] ?></option>
-                    <?php endforeach ?>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label for="username">Username</label>
-                  <input type="text" class="form-control" id="username" name="username" placeholder="Username" value="<?php echo $user_data['username'] ?>" autocomplete="off">
-                </div>
-
-                <div class="form-group">
-                  <label for="email">Email</label>
-                  <input type="email" class="form-control" id="email" name="email" placeholder="Email" value="<?php echo $user_data['email'] ?>" autocomplete="off">
-                </div>                
-
-                <div class="form-group">
-                  <label for="fname">First name</label>
-                  <input type="text" class="form-control" id="fname" name="fname" placeholder="First name" value="<?php echo $user_data['firstname'] ?>" autocomplete="off">
-                </div>
-
-                <div class="form-group">
-                  <label for="lname">Last name</label>
-                  <input type="text" class="form-control" id="lname" name="lname" placeholder="Last name" value="<?php echo $user_data['lastname'] ?>" autocomplete="off">
-                </div>
-
-                <div class="form-group">
-                  <label for="phone">Phone</label>
-                  <input type="text" class="form-control" id="phone" name="phone" placeholder="Phone" value="<?php echo $user_data['phone'] ?>" autocomplete="off">
-                </div>
-
-                <div class="form-group">
-                  <label for="gender">Gender</label>
-                  <div class="radio">
-                    <label>
-                      <input type="radio" name="gender" id="male" value="1" <?php if($user_data['gender'] == 1) {
-                        echo "checked";
-                      } ?>>
-                      Male
-                    </label>
-                    <label>
-                      <input type="radio" name="gender" id="female" value="2" <?php if($user_data['gender'] == 2) {
-                        echo "checked";
-                      } ?>>
-                      Female
-                    </label>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <div class="alert alert-info alert-dismissible" role="alert">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <div class="alert alert-error alert-dismissible" role="alert">
                       Leave the password field empty if you don't want to change.
                   </div>
                 </div>
@@ -125,7 +75,7 @@
               <!-- /.box-body -->
 
               <div class="box-footer">
-                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <button type="submit" class="btn btn-primary">Update User</button>
                 <a href="<?php echo base_url('users/') ?>" class="btn btn-warning">Back</a>
               </div>
             </form>
@@ -147,6 +97,5 @@
     $("#groups").select2();
 
     $("#userMainNav").addClass('active');
-    $("#manageUserSubNav").addClass('active');
   });
 </script>
