@@ -14,7 +14,7 @@
 <div class="container">
 	<div class="row loginrow">
 		<div class="col-md-6 hidden-sm hidden-xs"><img src="<?php echo base_url('assets/images/site/forgot-pass-illustration.png') ?>" class="img-responsive logo-center" /></div>
-		<div class="col-md-6col-sm-12 ">
+		<div class="col-md-6 col-sm-12">
 			<div class="login-box">
               <!-- /.login-logo -->
               <div class="login-box-body">
