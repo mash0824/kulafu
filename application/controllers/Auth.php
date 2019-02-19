@@ -102,8 +102,8 @@ class Auth extends Admin_Controller
     	            'protocol' => 'smtp',
     	            'smtp_host' => 'email-smtp.us-west-2.amazonaws.com',
     	            'smtp_port' => 587,
-    	            'smtp_user' => 'AKIAIXTKUBO5XODPUUBQ',
-    	            'smtp_pass' => 'BI7DStPYnNBIvjS1/6+KuLOYdtKPyrsnYUlv0j6K6k3w',
+    	            'smtp_user' => 'AKIAJ4TBFNLETPUKHM3Q',
+    	            'smtp_pass' => 'BO9zH+ZiloNqDLPwbLTi7NPs0FwTP/NILLDIGqhV+xfy',
     	            'mailtype'  => 'html',
     	            'charset'   => 'utf-8',
     	            'wordwrap'  => true,
@@ -114,7 +114,7 @@ class Auth extends Admin_Controller
     	        $config['newline'] = "\r\n";   //should be "\r\n"
     	        $this->load->library('email');
     	        $this->email->initialize($config);
-    	        $this->email->from('admin@switch.local', 'Switch Admin');
+    	        $this->email->from('admin@maciangsdelivery.com', 'Switch Admin');
     	        $this->email->to($userInfo['email']);
     	        
     	        $this->email->subject('Switch Inventory System | Password Recovery');
