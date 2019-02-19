@@ -100,7 +100,7 @@ class Auth extends Admin_Controller
     	        //exit;
     	        
     	        $this->load->library('email');
-    	        $this->email->from('admin@switch.local', 'Switch Admin');
+    	        $this->email->from('admin@maciangsdelivery.com', 'Switch Admin');
     	        $this->email->to($userInfo['email']);
     	        $this->email->set_protocol('mail');
     	        $this->email->subject('Switch Inventory System | Password Recovery');
