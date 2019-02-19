@@ -98,8 +98,19 @@ class Auth extends Admin_Controller
     	        $message .= '<strong>Please click:</strong> ' . $link;
     	        //echo $message; //send this through mail
     	        //exit;
-    	        
+    	        $config = array(
+    	            'protocol' => 'smtp',
+    	            'smtp_host' => 'email-smtp.us-west-2.amazonaws.com',
+    	            'smtp_port' => 587,
+    	            'smtp_user' => 'AKIAIXTKUBO5XODPUUBQ',
+    	            'smtp_pass' => 'BI7DStPYnNBIvjS1/6+KuLOYdtKPyrsnYUlv0j6K6k3w',
+    	            'mailtype'  => 'text',
+    	            'charset'   => 'utf-8',
+    	            'wordwrap'  => true,
+    	            'wrapchars' => 50
+    	        );
     	        $this->load->library('email');
+    	        $this->email->initialize($config);
     	        $this->email->from('admin@switch.local', 'Switch Admin');
     	        $this->email->to($userInfo['email']);
     	        
@@ -113,6 +124,8 @@ class Auth extends Admin_Controller
                     $this->data['errors'] = 'A password reset has been requested for this email account';
     	        }
 	            else {
+	                echo "<pre>";
+	                print_r($this->email);
 	                $this->data['errors'] = 'Error in sending Email.';
 	            }
     	        $this->load->view('forgot', $this->data);
