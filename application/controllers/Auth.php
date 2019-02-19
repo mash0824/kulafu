@@ -98,18 +98,13 @@ class Auth extends Admin_Controller
     	        $message .= '<strong>Please click:</strong> ' . $link;
     	        //echo $message; //send this through mail
     	        //exit;
-    	        
-    	        $this->load->library('email');
-    	        $this->email->from('admin@maciangsdelivery.com', 'Switch Admin');
-    	        $this->email->to($userInfo['email']);
-    	        $this->email->set_protocol('mail');
-    	        $this->email->subject('Switch Inventory System | Password Recovery');
-    	        $this->email->message($message);
-    	        $this->email->set_mailtype("html");
-    	        
-    	        
-    	        //Send mail
-    	        if($this->email->send()) {
+    	        $subject = 'Switch Inventory System | Password Recovery';
+    	        $headers = 'From: webmaster@example.com' . "\r\n" .
+    	            'Reply-To: webmaster@example.com' . "\r\n" .
+    	            'X-Mailer: PHP/' . phpversion();
+    	        $headers .= "MIME-Version: 1.0" . "\r\n";
+    	        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+    	        if(mail($userInfo['email'], $subject, $message, $headers)){
                     $this->data['errors'] = 'A password reset has been requested for this email account';
     	        }
 	            else {
