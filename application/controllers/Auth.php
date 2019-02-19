@@ -104,11 +104,14 @@ class Auth extends Admin_Controller
     	            'smtp_port' => 587,
     	            'smtp_user' => 'AKIAIXTKUBO5XODPUUBQ',
     	            'smtp_pass' => 'BI7DStPYnNBIvjS1/6+KuLOYdtKPyrsnYUlv0j6K6k3w',
-    	            'mailtype'  => 'text',
+    	            'mailtype'  => 'html',
     	            'charset'   => 'utf-8',
     	            'wordwrap'  => true,
     	            'wrapchars' => 50
     	        );
+    	        $config['smtp_crypto'] = 'tls';
+    	        $config['crlf'] = "\r\n";      //should be "\r\n"
+    	        $config['newline'] = "\r\n";   //should be "\r\n"
     	        $this->load->library('email');
     	        $this->email->initialize($config);
     	        $this->email->from('admin@switch.local', 'Switch Admin');
@@ -116,7 +119,6 @@ class Auth extends Admin_Controller
     	        
     	        $this->email->subject('Switch Inventory System | Password Recovery');
     	        $this->email->message($message);
-    	        $this->email->set_mailtype("html");
     	        
     	        
     	        //Send mail
