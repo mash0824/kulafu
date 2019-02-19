@@ -98,27 +98,14 @@ class Auth extends Admin_Controller
     	        $message .= '<strong>Please click:</strong> ' . $link;
     	        //echo $message; //send this through mail
     	        //exit;
-    	        $config = array(
-    	            'protocol' => 'smtp',
-    	            'smtp_host' => 'email-smtp.us-west-2.amazonaws.com',
-    	            'smtp_port' => 587,
-    	            'smtp_user' => 'AKIAJ4TBFNLETPUKHM3Q',
-    	            'smtp_pass' => 'BO9zH+ZiloNqDLPwbLTi7NPs0FwTP/NILLDIGqhV+xfy',
-    	            'mailtype'  => 'html',
-    	            'charset'   => 'utf-8',
-    	            'wordwrap'  => true,
-    	            'wrapchars' => 50
-    	        );
-    	        $config['smtp_crypto'] = 'tls';
-    	        $config['crlf'] = "\r\n";      //should be "\r\n"
-    	        $config['newline'] = "\r\n";   //should be "\r\n"
-    	        $this->load->library('email');
-    	        $this->email->initialize($config);
-    	        $this->email->from('admin@maciangsdelivery.com', 'Switch Admin');
-    	        $this->email->to($userInfo['email']);
     	        
+    	        $this->load->library('email');
+    	        $this->email->from('admin@switch.local', 'Switch Admin');
+    	        $this->email->to($userInfo['email']);
+    	        $this->email->set_protocol('mail');
     	        $this->email->subject('Switch Inventory System | Password Recovery');
     	        $this->email->message($message);
+    	        $this->email->set_mailtype("html");
     	        
     	        
     	        //Send mail
@@ -126,8 +113,6 @@ class Auth extends Admin_Controller
                     $this->data['errors'] = 'A password reset has been requested for this email account';
     	        }
 	            else {
-	                echo "<pre>";
-	                print_r($this->email);
 	                $this->data['errors'] = 'Error in sending Email.';
 	            }
     	        $this->load->view('forgot', $this->data);
