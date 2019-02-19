@@ -68,7 +68,6 @@ class Groups extends Admin_Controller
         }
 
 		if($id) {
-
 			$this->form_validation->set_rules('group_name', 'Group name', 'required');
 
 			if ($this->form_validation->run() == TRUE) {
@@ -107,32 +106,17 @@ class Groups extends Admin_Controller
             redirect('dashboard', 'refresh');
         }
         
-		if($id) {
-			if($this->input->post('confirm')) {
-
-				$check = $this->model_groups->existInUserGroup($id);
-				if($check == true) {
-					$this->session->set_flashdata('error', 'Group exists in the users');
-	        		redirect('groups/', 'refresh');
-				}
-				else {
-					$delete = $this->model_groups->delete($id);
-					if($delete == true) {
-		        		$this->session->set_flashdata('success', 'Successfully removed');
-		        		redirect('groups/', 'refresh');
-		        	}
-		        	else {
-		        		$this->session->set_flashdata('error', 'Error occurred!!');
-		        		redirect('groups/delete/'.$id, 'refresh');
-		        	}
-				}	
-			}	
-			else {
-				$this->data['id'] = $id;
-				$this->render_template('groups/delete', $this->data);
-			}	
-		}
+        if($id) {
+            $delete = $this->model_groups->delete($id);
+            if($delete == true) {
+                $response['success'] = true;
+                $response['messages'] = "Successfully removed";
+            }
+            else {
+                $response['success'] = false;
+                $response['messages'] = "Refresh the page again!!";
+            }
+        }
+        echo json_encode($response);
 	}
-
-
 }

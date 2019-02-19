@@ -13,8 +13,8 @@
 <body>
 <div class="container">
 	<div class="row loginrow">
-		<div class="col-sm-6"><img src="<?php echo base_url('assets/images/site/login-illustration.png') ?>" class="img-responsive logo-center" /></div>
-		<div class="col-sm-6">
+		<div class="col-md-6 hidden-sm hidden-xs"><img src="<?php echo base_url('assets/images/site/login-illustration.png') ?>" class="img-responsive logo-center" /></div>
+		<div class="col-md-6 col-sm-12">
 			<div class="login-box">
               <div class="login-logo">
                 Welcome to

@@ -64,11 +64,12 @@
                   <td><?php echo $product_data['sale_price']; ?></td>
                 </tr>
               </table>
-          
+          <?php if(in_array('updateProduct', $user_permission)): ?>
 		  <a href="<?php echo base_url('products/update/'.$product_data['id']) ?>" class="btn btn-primary">Edit Product</a>
+		  <?php endif; ?>
+		  <?php if(in_array('deleteProduct', $user_permission)): ?>
 		  <a href="#" class="btn btn-danger" onclick="removeFunc('<?php echo $product_data['id'];?>')" data-toggle="modal" data-target="#removeModal">Delete Product</a>
-		  <a href="<?php echo base_url('products') ?>" class="btn btn-warning">Back</a>
-
+		  <?php endif; ?>	
         </div>
         <!-- col-md-12 -->
       </div>
@@ -82,11 +83,11 @@
         Stock History
       </h1>
       </div>
-      <?php if(in_array('createProduct', $user_permission)): ?>
+      <?php /*if(in_array('createProduct', $user_permission)): ?>
       <div class="col-xs-12 col-sm-12 col-md-6 text-right">
             <a href="<?php echo base_url('/stocks-create') ?>" class="btn btn-primary">Add Stocks</a>
        </div>
-          <?php endif; ?>
+          <?php endif; */?>
     </section>
     <!-- Main content -->
     <section class="content">
@@ -105,7 +106,7 @@
                   <th>Unit</th>
                   <th>Expiry Date</th>
                   <th>Status</th>
-                  <?php if(in_array('updateGroup', $user_permission) || in_array('deleteGroup', $user_permission)): ?>
+                  <?php if(in_array('updateProduct', $user_permission) || in_array('viewProduct', $user_permission)): ?>
                     <th>Action</th>
                   <?php endif; ?>
                 </tr>
@@ -127,8 +128,8 @@
                         <td><?php echo $v['store_name']; ?></td>
                         <td><?php echo $v['quantity']; ?></td>
                         <td><?php echo $v['unit_name']; ?></td>
-                        <td><?php echo $v['expiry_date']; ?></td>
-                        <td><?php echo $v['stock_status']; ?></td>
+                        <td><?php if($v['expiry_date'] == "1970-01-01"){echo "";} else {echo $v['expiry_date'];} ?></td>
+                        <td><?php if($v['transaction_id'] > 0) {echo "<span class='normal'>Transferred</span>";} else { echo $v['stock_status'];} ?></td>
                         <td>
                            <?php if(in_array('updateProduct', $user_permission) && $v['stock_status_flag'] == 1): ?>
                           <a href="<?php echo base_url('withdrawals-create/manage/'.$v['store_id']) ?>" class="">Withdraw</a>  

@@ -104,33 +104,20 @@ class Settings extends Admin_Controller
 	    }
 	    
 	    if($id) {
-	        if($this->input->post('confirm')) {
-	            //
-	            $check = false;
-	            if($check == true) {
-	                $this->session->set_flashdata('error', 'Brand exists in the warehouse');
-	                redirect('settings/brands', 'refresh');
-	            }
-	            else {
-	                $data = array(
-	                    "is_active" => 0
-	                );
-	                $delete = $this->model_brands->update($data, $id);
-	                if($delete == true) {
-	                    $this->session->set_flashdata('success', 'Successfully removed');
-	                    redirect('settings/brands', 'refresh');
-	                }
-	                else {
-	                    $this->session->set_flashdata('error', 'Error occurred!!');
-	                    redirect('settings/brandDelete/'.$id, 'refresh');
-	                }
-	            }
+	        $data = array(
+	            "is_active" => 0
+	        );
+	        $delete = $this->model_brands->update($data, $id);
+	        if($delete == true) {
+	            $response['success'] = true;
+	            $response['messages'] = "Successfully removed";
 	        }
 	        else {
-	            $this->data['id'] = $id;
-	            $this->render_template('settings/brandDelete', $this->data);
+	            $response['success'] = false;
+	            $response['messages'] = "Refresh the page again!!";
 	        }
 	    }
+	    echo json_encode($response);
 	}
 	
     public function units(){
@@ -222,34 +209,22 @@ class Settings extends Admin_Controller
 	    if(!in_array('deleteSetting', $this->permission)) {
 	        redirect('dashboard', 'refresh');
 	    }
-	    
+	     
 	    if($id) {
-	        if($this->input->post('confirm')) {
-	            //
-	            $check = false;
-	            if($check == true) {
-	                $this->session->set_flashdata('error', 'Unit exists in the warehouse');
-	                redirect('settings/units', 'refresh');
-	            }
-	            else {
-	                $data = array(
-	                    "is_status" => 0
-	                );
-	                $delete = $this->model_units->update($data, $id);
-	                if($delete == true) {
-	                    $this->session->set_flashdata('success', 'Successfully removed');
-	                    redirect('settings/units', 'refresh');
-	                }
-	                else {
-	                    $this->session->set_flashdata('error', 'Error occurred!!');
-	                    redirect('settings/unitDelete/'.$id, 'refresh');
-	                }
-	            }
+	        $data = array(
+	            "is_status" => 0
+	        );
+	        $delete = $this->model_units->update($data, $id);
+	        if($delete == true) {
+	            $response['success'] = true;
+	            $response['messages'] = "Successfully removed";
 	        }
 	        else {
-	            $this->data['id'] = $id;
-	            $this->render_template('settings/unitDelete', $this->data);
+	            $response['success'] = false;
+	            $response['messages'] = "Refresh the page again!!";
 	        }
 	    }
+	    echo json_encode($response);
 	}
+	
 }

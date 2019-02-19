@@ -199,31 +199,22 @@ class Users extends Admin_Controller
 
 	public function delete($id)
 	{
-
 		if(!in_array('deleteUser', $this->permission)) {
             redirect('dashboard', 'refresh');
         }
-
-		if($id) {
-			if($this->input->post('confirm')) {
-
-				
-					$delete = $this->model_users->delete($id);
-					if($delete == true) {
-		        		$this->session->set_flashdata('success', 'Successfully removed');
-		        		redirect('users/', 'refresh');
-		        	}
-		        	else {
-		        		$this->session->set_flashdata('error', 'Error occurred!!');
-		        		redirect('users/delete/'.$id, 'refresh');
-		        	}
-
-			}	
-			else {
-				$this->data['id'] = $id;
-				$this->render_template('users/delete', $this->data);
-			}	
-		}
+        
+        if($id) {
+            $delete = $this->model_users->delete($id);
+            if($delete == true) {
+                $response['success'] = true;
+                $response['messages'] = "Successfully removed";
+            }
+            else {
+                $response['success'] = false;
+                $response['messages'] = "Refresh the page again!!";
+            }
+        }
+        echo json_encode($response);
 	}
 	
 	public function myAccount()

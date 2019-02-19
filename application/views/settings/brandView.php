@@ -39,9 +39,9 @@
                   <td><?php echo $brands_data['name']; ?></td>
                 </tr>
               </table>
-          
+          <?php if(in_array('updateSetting', $user_permission)): ?>
 		  <a href="<?php echo base_url('settings/brandEdit/'.$brands_data['id']) ?>" class="btn btn-primary">Edit Brand</a>
-		  <a href="<?php echo base_url('settings/brandDelete/'.$brands_data['id']) ?>" class="btn btn-danger">Delete Brand</a>
+		  <?php endif; ?>
 		  <a href="<?php echo base_url('settings/brands') ?>" class="btn btn-warning">Back</a>
 
         </div>

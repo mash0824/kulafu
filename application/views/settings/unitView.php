@@ -39,9 +39,9 @@
                   <td><?php echo $units_data['name']; ?></td>
                 </tr>
               </table>
-          
+          <?php if(in_array('updateSetting', $user_permission)): ?>
 		  <a href="<?php echo base_url('settings/unitEdit/'.$units_data['id']) ?>" class="btn btn-primary">Edit Unit</a>
-		  <a href="<?php echo base_url('settings/unitDelete/'.$units_data['id']) ?>" class="btn btn-danger">Delete Unit</a>
+		  <?php endif; ?>
 		  <a href="<?php echo base_url('settings/units') ?>" class="btn btn-warning">Back</a>
 
         </div>

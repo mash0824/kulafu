@@ -11,11 +11,11 @@
       </h1>
       </div>
       
-      <?php if(in_array('createProduct', $user_permission)): ?>
+      <?php if(in_array('createProduct', $user_permission) || in_array('createWarehouse', $user_permission) || in_array('updateWarehouse', $user_permission)): ?>
       <div class="col-xs-12 col-sm-12 col-md-6 text-right">
-            <a href="<?php echo base_url('warehouse/create') ?>" class="btn btn-primary">Create New Warehouse</a>
-            <a href="<?php echo base_url('products/create') ?>" class="btn btn-primary">Add Products</a>
-            <a href="<?php echo base_url('warehouse/edit/'.$warehouse_data['id']) ?>" class="btn btn-warning">Edit Warehouse Details</a>
+            <?php if(in_array('createWarehouse', $user_permission)): ?><a href="<?php echo base_url('warehouse/create') ?>" class="btn btn-primary">Create New Warehouse</a><?php endif; ?>
+            <?php if(in_array('createProduct', $user_permission)): ?><a href="<?php echo base_url('products/create') ?>" class="btn btn-primary">Create New Product</a><?php endif; ?>
+            <?php if(in_array('updateWarehouse', $user_permission)): ?><a href="<?php echo base_url('warehouse/edit/'.$warehouse_data['id']) ?>" class="btn btn-warning">Edit Warehouse Details</a><?php endif; ?>
        </div>
           <?php endif; ?>
   </section>
@@ -38,7 +38,9 @@
     				<input type="text" id="myInputTextField" placeholder="Search" />
     			</div>
     			<div class="col-md-6 col-xs-12 text-right">
+    				<?php if(in_array('createProduct', $user_permission) && in_array('createWarehouse', $user_permission)): ?>
                 	<a href="<?php echo base_url('warehouse-stocks-create/'.$warehouse_data['id']) ?>" class="btn btn-primary">Add Stocks</a>
+                	<?php endif; ?>
                 	<a href="#" id="download-csv" class="btn btn-warning">Download CSV</a>
            		</div>
     		</div>	
@@ -64,45 +66,47 @@
         <div class="box">
           <!-- /.box-header -->
           <div class="box-body hdsearch">
-          	<table id="customerTable" class="table table-bordered table-striped">
-                <thead>
-                <tr>
-                  	<th>Supplier SKU</th>
-                    <th>Product Name</th>
-                    <th>Brand</th>
-                    <th>In Stock</th>
-                    <th>Unit</th>
-                    <th>Sale Price</th>
-                    <th>Cost</th>
-                    <?php if(in_array('updateProduct', $user_permission) || in_array('deleteProduct', $user_permission)): ?>
-                      <th>Action</th>
-                    <?php endif; ?>
-                </tr>
-                </thead>
-                <tbody>
-                  <?php if($products): ?>                  
-                    <?php foreach ($products as $k => $v): ?>
-                      <tr>
-                        <td><?php echo $v['sku']; ?></td>
-                        <td><?php echo $v['name']; ?></td>
-                        <td><?php echo $v['brand_name']; ?></td>
-                        <td><?php echo (($v['stock_count'] - $v['less_stock']) > 0 ? $v['stock_count'] - $v['less_stock'] : 0); ?></td>
-                        <td><?php echo $v['unit_name']; ?></td>
-						<td><?php echo $v['sale_price']; ?></td>
-						<td><?php echo $v['cost']; ?></td>
-                        <td>
-                           <?php if(in_array('viewProduct', $user_permission)): ?>
-                          <a href="<?php echo base_url('warehouse-product-view/'.$warehouseNameLink.'/'.$v['product_id']."/".$warehouse_data['id']) ?>" class="">View</a>  
-                          <?php endif; ?>&nbsp;
-                          <?php if(in_array('deleteProduct', $user_permission)): ?>
-                          <a href="#" onclick="removeFuncWarehouse(<?php echo $v['product_id'];?>,<?php echo $warehouse_data['id'];?>);" data-toggle="modal" data-target="#removeModal" class="redlink">Remove</a>
-                          <?php endif; ?>
-                        </td>
-                      </tr>
-                    <?php endforeach ?>
-                  <?php endif; ?>
-                </tbody>
-              </table>
+          	<div class="table-responsive">
+              	<table id="customerTable" class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                      	<th>Supplier SKU</th>
+                        <th>Product Name</th>
+                        <th>Brand</th>
+                        <th>In Stock</th>
+                        <th>Unit</th>
+                        <th>Sale Price</th>
+                        <th>Cost</th>
+                        <?php if(in_array('updateProduct', $user_permission) || in_array('deleteProduct', $user_permission)): ?>
+                          <th>Action</th>
+                        <?php endif; ?>
+                    </tr>
+                    </thead>
+                    <tbody>
+                      <?php if($products): ?>                  
+                        <?php foreach ($products as $k => $v): ?>
+                          <tr>
+                            <td><?php echo $v['sku']; ?></td>
+                            <td><?php echo $v['name']; ?></td>
+                            <td><?php echo $v['brand_name']; ?></td>
+                            <td><?php echo (($v['stock_count'] - $v['less_stock']) > 0 ? $v['stock_count'] - $v['less_stock'] : 0); ?></td>
+                            <td><?php echo $v['unit_name']; ?></td>
+    						<td><?php echo $v['sale_price']; ?></td>
+    						<td><?php echo $v['cost']; ?></td>
+                            <td>
+                               <?php if(in_array('viewProduct', $user_permission)): ?>
+                              <a href="<?php echo base_url('warehouse-product-view/'.$warehouseNameLink.'/'.$v['product_id']."/".$warehouse_data['id']) ?>" class="">View</a>  
+                              <?php endif; ?>&nbsp;
+                              <?php if(in_array('deleteProduct', $user_permission)): ?>
+                              <a href="#" onclick="removeFuncWarehouse(<?php echo $v['product_id'];?>,<?php echo $warehouse_data['id'];?>);" data-toggle="modal" data-target="#removeModal" class="redlink">Remove</a>
+                              <?php endif; ?>
+                            </td>
+                          </tr>
+                        <?php endforeach ?>
+                      <?php endif; ?>
+                    </tbody>
+                  </table>
+              </div>
           </div>
           <!-- /.box-body -->
         </div>
@@ -150,7 +154,15 @@ $(document).ready(function() {
 	var table = $('#customerTable').DataTable({
 	  	  dom: 'Bfrtip',
 	        buttons: [
-	            'csv'
+                {
+                    extend: 'csv',
+                    exportOptions: {
+                        columns: [0,1,2,3,4,5,6]
+                    },
+                    footer: false
+                   
+                },
+	 
 	        ]
 	    });
 	$('#myInputTextField').keyup(function(){

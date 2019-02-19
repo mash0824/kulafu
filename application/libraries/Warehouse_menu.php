@@ -12,7 +12,7 @@ class Warehouse_menu {
         $menu .= '<i class="fa fa-building"></i> ';
         $menu .= '<span>Warehouses</span>';
         $menu .= '<span class="pull-right-container">';
-        $menu .= '<i class="fa fa-angle-left pull-right"></i>';
+        $menu .= '<i class="fa fa-angle-right pull-right"></i>';
         $menu .= '</span>';
         $menu .= '</a>';
         $menu .= '<ul class="treeview-menu">';

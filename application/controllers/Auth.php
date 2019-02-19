@@ -50,7 +50,7 @@ class Auth extends Admin_Controller
            		}
            	}
            	else {
-           		$this->data['errors'] = 'Username does not exists';
+           		$this->data['errors'] = 'Username does not exist';
 
            		$this->load->view('login_switch', $this->data);
            	}	

@@ -77,7 +77,7 @@
                             
                             <div class="form-group col-md-2 col-xs-12">
                               <label for="expiry_date">Expiry Date</label>
-                              <input type="text" class="form-control datepicker fieldLabel2" id="expiry_date_<?php echo $ct +1; ?>" name="expiry_date[]" placeholder="eg. 12/24/2019" autocomplete="off" value="<?php echo $stock_data[$kk]['expiry_date'] ?>" required /> 
+                              <input type="text" class="form-control datepicker fieldLabel2" id="expiry_date_<?php echo $ct +1; ?>" name="expiry_date[]" placeholder="eg. 12/24/2019" autocomplete="off" value="<?php if($stock_data[$kk]['expiry_date'] == "1970-01-01"){echo "";} else {echo $stock_data[$kk]['expiry_date'];} ?>" readonly /> 
                             </div>
                             <div class="form-group col-md-2 col-xs-12"><a href="#" class="btn btn-danger removeMappedField"><i class="fa fa-minus fa-inverse"></i></a></div>
                         </div>

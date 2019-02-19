@@ -60,7 +60,7 @@
                     <div class="col-xs-12">
                         <div class="form-group col-md-4 col-xs-12">
                           <label for="notes">Reason for Withdrawal</label>
-                          <input type="text" class="form-control" id="notes" name="notes" data-row-id="row_0" placeholder="Reaseon for Withdrawal" autocomplete="off" value="<?php echo $this->input->post('notes') ?>"  />
+                          <input type="text" class="form-control" id="notes" name="notes" data-row-id="row_0" placeholder="Reason for Withdrawal" autocomplete="off" value="<?php echo $this->input->post('notes') ?>"  />
                         </div>
     				</div>
                     <div class="col-xs-12" id="allMappedFields">
@@ -87,7 +87,7 @@
                             	
                             </div>
                             <div class="form-group col-md-2 col-xs-12">
-                              <label for="quantity[]">Quantity to Deliver</label>
+                              <label for="quantity[]">Quantity to Withdraw</label>
                               <input type="number" min="0" max="" class="form-control quantityLabel" id="quantity_0" name="quantity[]" data-row-id="row_0" placeholder="eg. 100" autocomplete="off" value="" required />
                             </div>
                             <div class="form-group col-md-2 col-xs-12">
@@ -109,6 +109,7 @@
                 <a href='#' id='addNewMappedField' class='greenlink '>Add more products</a> <br/>
                 <input type="checkbox" id="checkme" name="checkme" value="1" /> Mark as withdrew <br/>
                 <button type="submit" class="btn btn-primary">Create Withdrawal Order</button>
+                <a href="<?php echo base_url('/withdrawals/'.strtolower(str_replace(" ", "-", $warehouse_data['name'])).'/'.$warehouse_data['id']) ?>" class="btn btn-warning">Back</a>
               </div>
             </form>
           <!-- /.box-body -->
@@ -150,6 +151,12 @@ $(document).ready(function() {
     		$("#messages").html('<div class="alert alert-warning alert-dismissible" role="alert">'+
             '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
             '<strong> <span class="glyphicon glyphicon-exclamation-sign"></span> </strong>quantity is greater than In Stock value.</div>');
+			$(this).focus();
+    	}
+    	if(parseFloat(qtyVal) <= 0) {
+    		$("#messages").html('<div class="alert alert-warning alert-dismissible" role="alert">'+
+            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+            '<strong> <span class="glyphicon glyphicon-exclamation-sign"></span> </strong>quantity should be greater than zero.</div>');
 			$(this).focus();
     	}
     });

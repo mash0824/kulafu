@@ -76,7 +76,7 @@
                             
                             <div class="form-group col-md-2 col-xs-12">
                               <label for="expiry_date">Expiry Date</label>
-                              <input type="text" class="form-control datepicker fieldLabel2" id="expiry_date_1" name="expiry_date[]" placeholder="eg. 12/24/2019" autocomplete="off" value="<?php echo $this->input->post('expiry_date') ?>" required /> 
+                              <input type="text" class="form-control datepicker fieldLabel2" id="expiry_date_1" name="expiry_date[]" placeholder="eg. 12/24/2019" autocomplete="off" value="<?php echo $this->input->post('expiry_date') ?>" readonly /> 
                             </div>
                             <div class="form-group col-md-2 col-xs-12"><a href="#" class="btn btn-danger removeMappedField"><i class="fa fa-minus fa-inverse"></i></a></div>
                         </div>
@@ -88,6 +88,7 @@
               <div class="box-footer">
                 <a href='#' id='addNewMappedField' class='greenlink '>Add more products</a> <br/>
                 <button type="submit" class="btn btn-primary">Update</button>
+                <a href="<?php echo base_url('/lists-of-products/'.$store_name.'/'.$store_id) ?>" class="btn btn-warning">Back</a>
               </div>
             </form>
           <!-- /.box-body -->

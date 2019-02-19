@@ -47,9 +47,9 @@
                   <td><?php echo $customers_data['email']; ?></td>
                 </tr>
               </table>
-          
+          <?php if(in_array('updateCustomer', $user_permission)): ?>
 		  <a href="<?php echo base_url('customers/edit/'.$customers_data['id']) ?>" class="btn btn-primary">Edit Customer</a>
-		  <a href="<?php echo base_url('customers/delete/'.$customers_data['id']) ?>" class="btn btn-danger">Delete Customer</a>
+		  <?php endif; ?>
 		  <a href="<?php echo base_url('customers') ?>" class="btn btn-warning">Back</a>
 
         </div>

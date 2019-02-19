@@ -161,7 +161,33 @@ class Model_products extends CI_Model
                 	(SELECT units.`name` FROM units WHERE units.id = products.id) as unit_name, products.sale_price, products.cost, unit_id,
                 	(
                 		SELECT
-                			sum(skd.quantity)
+                			IFNULL(
+				(
+					SELECT
+						sum(sss.quantity)
+					FROM
+						stock_details sss
+					WHERE
+						sss.expiry_date > DATE(NOW())
+					AND sss.product_id = skd.product_id
+					GROUP BY
+						sss.product_id
+				) ,
+				0
+			) + IFNULL(
+				(
+					SELECT
+						sum(sse.quantity)
+					FROM
+						stock_details sse
+					WHERE
+						sse.expiry_date = '1970-01-01'
+					AND sse.product_id = skd.product_id
+					GROUP BY
+						sse.product_id
+				) ,
+				0
+			)
                 		FROM
                 			stock_details skd, stocks stk
                 		WHERE
@@ -198,7 +224,7 @@ class Model_products extends CI_Model
                 
                 WHERE
                 	stocks.id = stock_details.stock_id AND products.id = stock_details.product_id
-                	AND stocks.store_id = 1 AND stock_details.is_deleted = 0 
+                	AND stocks.store_id = 1 AND stock_details.is_deleted = 0 AND products.is_deleted = 0 
                 	GROUP BY products.id HAVING stock_count >0
 	            ";
 	        $query = $this->db->query($sql);
@@ -301,13 +327,15 @@ class Model_products extends CI_Model
             	strs.`name` as store_name ,
             	quantity ,
             	unt.`name` as unit_name,
+            	sts.transaction_id,
             	expiry_date,
             	(CASE
-            	    WHEN DATE_ADD(CURDATE(), INTERVAL 7 DAY) >=  expiry_date THEN "<span class='expiring'>Expiring Soon</span>"
+            	     WHEN DATE(CURDATE()) >=  expiry_date AND expiry_date <> "1970-01-01" THEN "<span class='expiring'>Expired</span>"
+            	    WHEN DATE_ADD(CURDATE(), INTERVAL 7 DAY) >=  expiry_date AND expiry_date <> "1970-01-01" THEN "<span class='expiring'>Expiring Soon</span>"
             	    ELSE "<span class='normal'>Normal</span>"
             	END) as stock_status,
             	(CASE
-            	    WHEN DATE_ADD(CURDATE(), INTERVAL 7 DAY) >=  expiry_date THEN 1
+            	    WHEN DATE_ADD(CURDATE(), INTERVAL 7 DAY) >=  expiry_date AND expiry_date <> "1970-01-01"  THEN 1
             	    ELSE 0
             	END) as stock_status_flag
             FROM 
@@ -352,61 +380,121 @@ xxx;
 	public function getInStockCount($id=null){
 	    if($id) {
     	    $sql = "SELECT
-                	product_id ,
-                	stock_count ,
-                	less_count
-                FROM
-                	(
-                		SELECT
-                			skd.product_id ,
-                			sum(skd.quantity) as stock_count
-                		FROM
-                			stock_details skd
-                		WHERE
-                			skd.expiry_date > DATE(NOW()) 
-                			AND product_id = '$id' AND skd.is_deleted = '0' 
-                		GROUP BY
-                			product_id
-                	) as D
-                LEFT JOIN(
-                	SELECT
-                		tds.product_id as pdid ,
-                		sum(tds.quantity) as less_count
-                	FROM
-                		transaction_details tds ,
-                		transactions trs
-                	WHERE
-                		trs.transaction_type NOT IN('transfer')
-                	AND trs.id = tds.transaction_id
-                ) as C ON C.pdid = D.product_id AND D.product_id = '$id' AND C.pdid = '$id'";
+	product_id ,
+	stock_count ,
+	less_count
+FROM
+	(
+		SELECT
+			skd.product_id ,
+			IFNULL(
+				(
+					SELECT
+						sum(sss.quantity)
+					FROM
+						stock_details sss
+					WHERE
+						sss.expiry_date > DATE(NOW())
+					AND sss.product_id = skd.product_id
+					GROUP BY
+						sss.product_id
+				) ,
+				0
+			) + IFNULL(
+				(
+					SELECT
+						sum(sse.quantity)
+					FROM
+						stock_details sse
+					WHERE
+						sse.expiry_date = '1970-01-01'
+					AND sse.product_id = skd.product_id
+					GROUP BY
+						sse.product_id
+				) ,
+				0
+			) as stock_count
+		FROM
+			stock_details skd
+		WHERE
+			product_id = '$id'
+		AND skd.is_deleted = '0'
+		GROUP BY
+			product_id
+	) as D
+LEFT JOIN(
+	SELECT
+		tds.product_id as pdid ,
+		sum(tds.quantity) as less_count
+	FROM
+		transaction_details tds ,
+		transactions trs
+	WHERE
+		trs.transaction_type NOT IN('transfer')
+	AND trs.id = tds.transaction_id
+	group by
+		tds.product_id
+) as C ON C.pdid = D.product_id
+AND D.product_id = '$id'
+AND C.pdid = '$id'";
 	    } else {
     	    $sql = "SELECT
-    	    product_id ,
-    	    stock_count ,
-    	    less_count
-    	    FROM
-    	    (
-    	    SELECT
-    	    skd.product_id ,
-    	    sum(skd.quantity) as stock_count
-    	    FROM
-    	    stock_details skd
-    	    WHERE
-    	    skd.expiry_date > DATE(NOW()) AND   skd.is_deleted = '0'  
-    	    GROUP BY
-    	    product_id
-    	    ) as D
-    	    LEFT JOIN(
-    	    SELECT
-    	    tds.product_id as pdid ,
-    	    sum(tds.quantity) as less_count
-    	    FROM
-    	    transaction_details tds ,
-    	    transactions trs
-    	    WHERE
-    	    trs.transaction_type NOT IN('transfer')
-    	    AND trs.id = tds.transaction_id
-    	    ) as C ON C.pdid = D.product_id";
+	product_id ,
+	stock_count ,
+	less_count
+FROM
+	(
+		SELECT
+			skd.product_id ,
+			IFNULL(
+				(
+					SELECT
+						sum(sss.quantity)
+					FROM
+						stock_details sss
+					WHERE
+						sss.expiry_date > DATE(NOW())
+					AND sss.product_id = skd.product_id
+					GROUP BY
+						sss.product_id
+				) ,
+				0
+			) + IFNULL(
+				(
+					SELECT
+						sum(sse.quantity)
+					FROM
+						stock_details sse
+					WHERE
+						sse.expiry_date = '1970-01-01'
+					AND sse.product_id = skd.product_id
+					GROUP BY
+						sse.product_id
+				) ,
+				0
+			) as stock_count
+		FROM
+			stock_details skd
+		WHERE
+			skd.expiry_date > DATE(NOW())
+		AND skd.is_deleted = '0'
+		AND skd.expiry_date <> '1970-01-01'
+		GROUP BY
+			product_id
+	) as D
+LEFT JOIN(
+	SELECT
+		tds.product_id as pdid ,
+		sum(tds.quantity) as less_count
+	FROM
+		transaction_details tds ,
+		transactions trs
+	WHERE
+		trs.transaction_type NOT IN('transfer')
+	AND trs.id = tds.transaction_id
+	GROUP BY
+		tds.product_id
+) as C ON C.pdid = D.product_id";
 	    }
 	    $query = $this->db->query($sql);
 	    return $query->result_array();
@@ -423,14 +511,14 @@ xxx;
 		$user_id = $this->session->userdata('id');
 
 		if($user_id == 1) {
-			$sql = "SELECT * FROM products  ORDER BY id DESC";
+			$sql = "SELECT * FROM products  WHERE is_deleted = 0 ORDER BY id DESC";
 			$query = $this->db->query($sql);
 			return $query->result_array();
 		}
 		else {
 			$this->load->model('model_users');
 			$user_data = $this->model_users->getUserData($user_id);
-			$sql = "SELECT * FROM products ORDER BY id DESC";
+			$sql = "SELECT * FROM products   WHERE is_deleted = 0 ORDER BY id DESC";
 			$query = $this->db->query($sql);
 
 			$data = array();

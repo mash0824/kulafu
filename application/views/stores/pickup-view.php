@@ -89,13 +89,18 @@
                       </table>
                       <div>
                       <br/>
-                      <input type="checkbox" id="checkme" name="checkme" value="1" <?php if($warehouse_data['transaction_status'] == "delivered"): echo "checked"; endif;?> /> <label for="checkme">Mark as delivered</label> <br/>
+                      <input type="checkbox" id="checkme" name="checkme" value="1" <?php if($warehouse_data['transaction_status'] == "delivered"): echo "checked"; endif;?> /> <label for="checkme">Mark as picked up</label> <br/>
                       <?php if($warehouse_data['transaction_status'] != "delivered"): ?>
+                      	<?php if(in_array('updatePickup', $user_permission)): ?>
                       <a href="javascript:void(0);" onclick="confirmOrder('<?php echo $warehouseId;?>','<?php echo $tid;?>');"  class="btn btn-primary">Confirm Pickup Order</a>
+                      <?php endif;?>
                       <?php else: ?> 
                       <a href="javascript:void(0);" onclick="myFunction();" class="btn btn-primary">Download Pickup Order</a>
                       <?php endif;?>
+                      <?php if(in_array('updatePickup', $user_permission)): ?>
                       <a href="<?php echo base_url('/pickups-edit/'.$warehouseNameLink.'/'.$warehouseId.'/'.$tid) ?>" class="btn btn-warning">Edit Pickup Order</a>
+                      <?php endif;?>
+                      <a href="<?php echo base_url('/pickups/'.$warehouseNameLink.'/'.$warehouseId) ?>" class="btn btn-warning">Back</a>
                       
                       </div>
                     </div>

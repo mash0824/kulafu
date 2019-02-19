@@ -121,7 +121,7 @@
                             </div>
                             <div class="form-group col-md-2 col-xs-12">
                               <label for="unit_id[]">Unit of Measure</label>
-                              <select class="form-control select_group  unitLabel" id="unit_id_<?php echo $ct;?>" data-row-id="row_<?php echo $ct;?>" name="unit_id[]">
+                              <select class="form-control select_group  unitLabel" id="unit_id_<?php echo $ct;?>" data-row-id="row_<?php echo $ct;?>" name="unit_id[]" disabled>
                               	<option value=""></option>
                                 <?php foreach ($units as $k => $v): ?>
                                   <option value="<?php echo $v['id'] ?>" <?php if($value['unit_id'] == $v['id']): echo "selected"; endif;?>><?php echo $v['name'] ?></option>
@@ -159,6 +159,7 @@
                 <a href='#' id='addNewMappedField' class='greenlink '>Add more products</a> <br/>
                 <input type="checkbox" id="checkme" name="checkme" value="1" <?php if($tdata['transaction_status'] == "delivered"): echo "checked";  endif;?> /> <label for="checkme">Mark as delivered</label> <br/>
                 <button type="submit" class="btn btn-primary">Update Delivery Order</button>
+                <a href="<?php echo base_url('/deliveries/'.strtolower(str_replace(" ", "-", $warehouse_data['name'])).'/'.$warehouse_data['id']) ?>" class="btn btn-warning">Back</a>
               </div>
             </form>
           <!-- /.box-body -->
@@ -199,6 +200,12 @@ $(document).ready(function() {
     		$("#messages").html('<div class="alert alert-warning alert-dismissible" role="alert">'+
             '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
             '<strong> <span class="glyphicon glyphicon-exclamation-sign"></span> </strong>quantity is greater than In Stock value.</div>');
+			$(this).focus();
+    	}
+    	else if(parseFloat(qtyVal) <= 0) {
+    		$("#messages").html('<div class="alert alert-warning alert-dismissible" role="alert">'+
+            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+            '<strong> <span class="glyphicon glyphicon-exclamation-sign"></span> </strong>quantity should be greater than zero.</div>');
 			$(this).focus();
     	}
     	else {

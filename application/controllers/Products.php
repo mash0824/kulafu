@@ -328,7 +328,7 @@ class Products extends Admin_Controller
 	    $this->form_validation->set_rules('store_id', 'Destination', 'trim|required');
 	    $this->form_validation->set_rules('product_id[]', 'Product name', 'trim|required');
 	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric');
-	    $this->form_validation->set_rules('expiry_date[]', 'Expiry Date', 'trim|required');
+	    //$this->form_validation->set_rules('expiry_date[]', 'Expiry Date', 'trim|required');
 	    
 	    if ($this->form_validation->run() == TRUE) {
 	        $stock_data = array(
@@ -433,7 +433,7 @@ class Products extends Admin_Controller
 	    $this->form_validation->set_rules('store_id', 'Destination', 'trim|required');
 	    $this->form_validation->set_rules('product_id[]', 'Product name', 'trim|required');
 	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric');
-	    $this->form_validation->set_rules('expiry_date[]', 'Expiry Date', 'trim|required');
+	    //$this->form_validation->set_rules('expiry_date[]', 'Expiry Date', 'trim|required');
 	     
 	    if ($this->form_validation->run() == TRUE) {
 	         
@@ -463,8 +463,13 @@ class Products extends Admin_Controller
 	        redirect('stocks-summary/'.$stock_id, 'refresh');
 	    }
 	    else {
+	        
+	        $warehouse_data = $this->model_stores->getStoresData($store_id);
+	        $warehouseName = str_replace(" ", "-", $warehouse_data['name']);
+	        $warehouseName = strtolower($warehouseName);
 	        $this->data['stores'] = $this->model_stores->getActiveStore();
 	        $this->data['store_id'] = $store_id;
+	        $this->data['store_name'] = $warehouseName;
 	        $this->data['products'] = $this->model_products->getActiveProductData();
 	        $this->render_template('products/stock-create-warehouse', $this->data);
 	    }
@@ -516,7 +521,7 @@ class Products extends Admin_Controller
         }
         else {
             $response['success'] = false;
-            $response['messages'] = "Refersh the page again!!";
+            $response['messages'] = "Refresh the page again!!";
         }
 
         echo json_encode($response);

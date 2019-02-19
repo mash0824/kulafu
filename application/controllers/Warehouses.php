@@ -151,6 +151,8 @@ class Warehouses extends Admin_Controller
 	    $warehouseName = str_replace("-", " ", $warehouseName);
 	    $warehouseName = ucwords($warehouseName);
 	    $warehouseId = intval($warehouseId);
+	    
+	    $this->data['page_title'] = $warehouseNameLink.'-list-of-products-'.date("Y-m-d");
 	     
 	    //get all products by stores which is not deleted and removed
 	    //$warehouse_products = $this->model_products->getProductListByWarehouse($warehouseId);
@@ -165,7 +167,7 @@ class Warehouses extends Admin_Controller
 	
 	
 	public function deliveries($warehouseName,$warehouseId){
-	    if(!in_array('viewWarehouse', $this->permission)) {
+	    if(!in_array('viewDelivery', $this->permission)) {
 	        redirect('dashboard', 'refresh');
 	    }
 	    
@@ -173,6 +175,7 @@ class Warehouses extends Admin_Controller
 	    $warehouseName = str_replace("-", " ", $warehouseName);
 	    $warehouseName = ucwords($warehouseName);
 	    $warehouseId = intval($warehouseId);
+	    $this->data['page_title'] = $warehouseNameLink.'-deliveries-'.date("Y-m-d");
 	    //get all products by stores which is not deleted and removed
 	    $warehouse_products = $this->model_stores->getAllTransactionDetails("delivery",$warehouseId);
 	    $warehouse_data = $this->model_stores->getStoresData($warehouseId);
@@ -184,7 +187,7 @@ class Warehouses extends Admin_Controller
 	}
 	
 	public function deliveries_view($warehouseName,$tid,$warehouseId){
-	    if(!in_array('viewWarehouse', $this->permission)) {
+	    if(!in_array('viewDelivery', $this->permission)) {
 	        redirect('dashboard', 'refresh');
 	    }
 	    
@@ -218,7 +221,7 @@ class Warehouses extends Admin_Controller
 	}
 	
 	public function deliveries_edit($warehouseName,$warehouseId,$tid){
-	    if(!in_array('updateWarehouse', $this->permission)) {
+	    if(!in_array('updateDelivery', $this->permission)) {
 	        redirect('dashboard', 'refresh');
 	    }
 	    
@@ -294,7 +297,7 @@ class Warehouses extends Admin_Controller
 	}
 	
 	public function deliveries_confirm($store_id,$tid) {
-	    if(!in_array('deleteWarehouse', $this->permission)) {
+	    if(!in_array('updateDelivery', $this->permission)) {
 	        redirect('dashboard', 'refresh');
 	    }
 	    
@@ -323,7 +326,7 @@ class Warehouses extends Admin_Controller
 	}
 	
 	public function deliveries_create($warehouseName,$warehouseId){
-	    if(!in_array('createWarehouse', $this->permission)) {
+	    if(!in_array('createDelivery', $this->permission)) {
 	        redirect('dashboard', 'refresh');
 	    }
 	    
@@ -347,7 +350,7 @@ class Warehouses extends Admin_Controller
 	    $this->form_validation->set_rules('customer_id', 'Customer or Company Name', 'trim|required');
 	    $this->form_validation->set_rules('address', 'Address', 'trim|required');
 	    $this->form_validation->set_rules('product_id[]', 'Product name', 'trim|required');
-	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric');
+	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric|greater_than[0]');
 	    $this->form_validation->set_rules('notes', 'Additional notes', 'trim');
 	    
 	    if ($this->form_validation->run() == TRUE) {
@@ -388,7 +391,7 @@ class Warehouses extends Admin_Controller
 	}
 	
 	public function pickups($warehouseName,$warehouseId){
-	    if(!in_array('viewWarehouse', $this->permission)) {
+	    if(!in_array('viewPickup', $this->permission)) {
 	        redirect('dashboard', 'refresh');
 	    }
 	     
@@ -396,6 +399,7 @@ class Warehouses extends Admin_Controller
 	    $warehouseName = str_replace("-", " ", $warehouseName);
 	    $warehouseName = ucwords($warehouseName);
 	    $warehouseId = intval($warehouseId);
+	    $this->data['page_title'] = $warehouseNameLink.'-pickups-'.date("Y-m-d");
 	    //get all products by stores which is not deleted and removed
 	    $warehouse_products = $this->model_stores->getAllTransactionDetails("pickup",$warehouseId);
 	    $warehouse_data = $this->model_stores->getStoresData($warehouseId);
@@ -407,7 +411,7 @@ class Warehouses extends Admin_Controller
 	}
 	
 	public function pickups_create($warehouseName,$warehouseId){
-	    if(!in_array('createWarehouse', $this->permission)) {
+	    if(!in_array('createPickup', $this->permission)) {
 	        redirect('dashboard', 'refresh');
 	    }
 	     
@@ -430,7 +434,7 @@ class Warehouses extends Admin_Controller
 	    $this->form_validation->set_rules('store_id', 'Source Location', 'trim|required');
 	    $this->form_validation->set_rules('customer_id', 'Customer or Company Name', 'trim|required');
 	    $this->form_validation->set_rules('product_id[]', 'Product name', 'trim|required');
-	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric');
+	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric|greater_than[0]');
 	    $this->form_validation->set_rules('notes', 'Additional notes', 'trim');
 	     
 	    if ($this->form_validation->run() == TRUE) {
@@ -470,7 +474,7 @@ class Warehouses extends Admin_Controller
 	}
 	
 	public function pickups_view($warehouseName,$tid,$warehouseId){
-	    if(!in_array('viewWarehouse', $this->permission)) {
+	    if(!in_array('viewPickup', $this->permission)) {
 	        redirect('dashboard', 'refresh');
 	    }
 	     
@@ -502,7 +506,7 @@ class Warehouses extends Admin_Controller
 	}
 	
 	public function pickups_confirm($store_id,$tid) {
-	    if(!in_array('deleteWarehouse', $this->permission)) {
+	    if(!in_array('updatePickup', $this->permission)) {
 	        redirect('dashboard', 'refresh');
 	    }
 	     
@@ -531,7 +535,7 @@ class Warehouses extends Admin_Controller
 	}
 	
 	public function pickups_edit($warehouseName,$warehouseId,$tid){
-	    if(!in_array('updateWarehouse', $this->permission)) {
+	    if(!in_array('updatePickup', $this->permission)) {
 	        redirect('dashboard', 'refresh');
 	    }
 	     
@@ -563,7 +567,7 @@ class Warehouses extends Admin_Controller
 	    $this->form_validation->set_rules('store_id', 'Source Location', 'trim|required');
 	    $this->form_validation->set_rules('customer_id', 'Customer or Company Name', 'trim|required');
 	    $this->form_validation->set_rules('product_id[]', 'Product name', 'trim|required');
-	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric');
+	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric|greater_than[0]');
 	    $this->form_validation->set_rules('notes', 'Additional notes', 'trim');
 	     
 	    if ($this->form_validation->run() == TRUE) {
@@ -605,7 +609,7 @@ class Warehouses extends Admin_Controller
 	}
 	
 	public function transfers($warehouseName,$warehouseId){
-	    if(!in_array('viewWarehouse', $this->permission)) {
+	    if(!in_array('viewTransfer', $this->permission)) {
 	        redirect('dashboard', 'refresh');
 	    }
 	
@@ -613,6 +617,7 @@ class Warehouses extends Admin_Controller
 	    $warehouseName = str_replace("-", " ", $warehouseName);
 	    $warehouseName = ucwords($warehouseName);
 	    $warehouseId = intval($warehouseId);
+	    $this->data['page_title'] = $warehouseNameLink.'-transfers-'.date("Y-m-d");
 	    //get all products by stores which is not deleted and removed
 	    $warehouse_products = $this->model_stores->getAllTransactionDetails("transfer",$warehouseId);
 	    $warehouse_data = $this->model_stores->getStoresData($warehouseId);
@@ -625,7 +630,7 @@ class Warehouses extends Admin_Controller
 	}
 	
 	public function transfers_create($warehouseName,$warehouseId){
-	    if(!in_array('createWarehouse', $this->permission)) {
+	    if(!in_array('createTransfer', $this->permission)) {
 	        redirect('dashboard', 'refresh');
 	    }
 	
@@ -647,7 +652,7 @@ class Warehouses extends Admin_Controller
 	    $this->form_validation->set_rules('from_store_id', 'Source Location', 'trim|required');
 	    $this->form_validation->set_rules('store_id', 'Destination Location', 'trim|required');
 	    $this->form_validation->set_rules('product_id[]', 'Product name', 'trim|required');
-	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric');
+	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric|greater_than[0]');
 	    
 
 	
@@ -694,7 +699,7 @@ class Warehouses extends Admin_Controller
 	            $this->model_stores->createTDetails($items);
 	            $this->model_stores->createSTDetails($stock_details);
 	        }
-	        redirect('transfers-view/'.$warehouseNameLink.'/'.$t_id.'/'.$warehouseId, 'refresh');
+	        redirect('transfers-view/'.$warehouseNameLink.'/'.$t_id.'/'.$destination_store_id, 'refresh');
 	    }
 	    else {
 	        $this->data['display_id'] = $display_id;
@@ -707,7 +712,7 @@ class Warehouses extends Admin_Controller
 	}
 	
 	public function transfers_view($warehouseName,$tid,$warehouseId){
-	    if(!in_array('viewWarehouse', $this->permission)) {
+	    if(!in_array('viewTransfer', $this->permission)) {
 	        redirect('dashboard', 'refresh');
 	    }
 	
@@ -727,6 +732,7 @@ class Warehouses extends Admin_Controller
 	            'destination_location' => $warehouse_products[0]['destination_location'],
 	            'source_location' => $warehouse_products[0]['source_location'],
 	            'transaction_status' => $warehouse_products[0]['transaction_status'],
+	            'from_store_id' => $warehouse_products[0]['from_store_id'],
 	        );
 	    }
 	    $this->data['warehouseNameLink'] = $warehouseNameLink;
@@ -738,7 +744,7 @@ class Warehouses extends Admin_Controller
 	}
 	
 	public function transfers_confirm($store_id,$tid) {
-	    if(!in_array('deleteWarehouse', $this->permission)) {
+	    if(!in_array('updateTransfer', $this->permission)) {
 	        redirect('dashboard', 'refresh');
 	    }
 	
@@ -767,7 +773,7 @@ class Warehouses extends Admin_Controller
 	}
 	
 	public function transfers_edit($warehouseName,$warehouseId,$tid){
-	    if(!in_array('updateWarehouse', $this->permission)) {
+	    if(!in_array('updateTransfer', $this->permission)) {
 	        redirect('dashboard', 'refresh');
 	    }
 	   
@@ -805,7 +811,7 @@ class Warehouses extends Admin_Controller
 	    $this->form_validation->set_rules('from_store_id', 'Source Location', 'trim|required');
 	    $this->form_validation->set_rules('store_id', 'Destination Location', 'trim|required');
 	    $this->form_validation->set_rules('product_id[]', 'Product name', 'trim|required');
-	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric');
+	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric|greater_than[0]');
 	
 	
 	    if ($this->form_validation->run() == TRUE) {
@@ -875,7 +881,7 @@ class Warehouses extends Admin_Controller
 	
 	
 	public function withdrawals($warehouseName,$warehouseId){
-	    if(!in_array('viewWarehouse', $this->permission)) {
+	    if(!in_array('viewWithdrawal', $this->permission)) {
 	        redirect('dashboard', 'refresh');
 	    }
 	
@@ -883,6 +889,9 @@ class Warehouses extends Admin_Controller
 	    $warehouseName = str_replace("-", " ", $warehouseName);
 	    $warehouseName = ucwords($warehouseName);
 	    $warehouseId = intval($warehouseId);
+	    
+	    $this->data['page_title'] = $warehouseNameLink.'-withdrawals-'.date("Y-m-d");
+	    
 	    //get all products by stores which is not deleted and removed
 	    $warehouse_products = $this->model_stores->getAllTransactionDetails("withdrawal",$warehouseId);
 	    $warehouse_data = $this->model_stores->getStoresData($warehouseId);
@@ -895,7 +904,7 @@ class Warehouses extends Admin_Controller
 	
 	
 	public function withdrawals_confirm($store_id,$tid) {
-	    if(!in_array('deleteWarehouse', $this->permission)) {
+	    if(!in_array('updateWithdrawal', $this->permission)) {
 	        redirect('dashboard', 'refresh');
 	    }
 	
@@ -924,7 +933,7 @@ class Warehouses extends Admin_Controller
 	}
 	
 	public function withdrawals_create($warehouseName,$warehouseId){
-	    if(!in_array('createWarehouse', $this->permission)) {
+	    if(!in_array('createWithdrawal', $this->permission)) {
 	        redirect('dashboard', 'refresh');
 	    }
 	
@@ -946,7 +955,7 @@ class Warehouses extends Admin_Controller
 	    $this->form_validation->set_rules('store_id', 'Destination Location', 'trim|required');
 	    $this->form_validation->set_rules('notes', 'Reason for Withdrawal', 'trim');
 	    $this->form_validation->set_rules('product_id[]', 'Product name', 'trim|required');
-	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric');
+	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric|greater_than[0]');
 	     
 	    if ($this->form_validation->run() == TRUE) {
 	        $transaction_data = array(
@@ -983,7 +992,7 @@ class Warehouses extends Admin_Controller
 	
 
 	public function withdrawals_view($warehouseName,$tid,$warehouseId){
-	    if(!in_array('viewWarehouse', $this->permission)) {
+	    if(!in_array('viewWithdrawal', $this->permission)) {
 	        redirect('dashboard', 'refresh');
 	    }
 	
@@ -1015,7 +1024,7 @@ class Warehouses extends Admin_Controller
 	}
 	
 	public function withdrawals_edit($warehouseName,$warehouseId,$tid){
-	    if(!in_array('updateWarehouse', $this->permission)) {
+	    if(!in_array('updateWithdrawal', $this->permission)) {
 	        redirect('dashboard', 'refresh');
 	    }
 	    $warehouseNameLink = $warehouseName;
@@ -1045,7 +1054,7 @@ class Warehouses extends Admin_Controller
 	    $this->form_validation->set_rules('store_id', 'Source Location', 'trim|required');
 	    $this->form_validation->set_rules('notes', 'Reason for Withdrawal', 'trim');
 	    $this->form_validation->set_rules('product_id[]', 'Product name', 'trim|required');
-	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric');
+	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric|greater_than[0]');
 	
 	
 	    if ($this->form_validation->run() == TRUE) {

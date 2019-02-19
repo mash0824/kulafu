@@ -11,11 +11,11 @@
       </h1>
       </div>
       
-      <?php if(in_array('createProduct', $user_permission)): ?>
+      <?php if(in_array('createProduct', $user_permission) || in_array('createWarehouse', $user_permission) || in_array('updateWarehouse', $user_permission)): ?>
       <div class="col-xs-12 col-sm-12 col-md-6 text-right">
-            <a href="<?php echo base_url('warehouse/create') ?>" class="btn btn-primary">Create New Warehouse</a>
-            <a href="<?php echo base_url('products/create') ?>" class="btn btn-primary">Add Products</a>
-            <a href="<?php echo base_url('warehouse/edit/'.$warehouse_data['id']) ?>" class="btn btn-warning">Edit Warehouse Details</a>
+            <?php if(in_array('createWarehouse', $user_permission)): ?><a href="<?php echo base_url('warehouse/create') ?>" class="btn btn-primary">Create New Warehouse</a><?php endif; ?>
+            <?php if(in_array('createProduct', $user_permission)): ?><a href="<?php echo base_url('products/create') ?>" class="btn btn-primary">Create New Product</a><?php endif; ?>
+            <?php if(in_array('updateWarehouse', $user_permission)): ?><a href="<?php echo base_url('warehouse/edit/'.$warehouse_data['id']) ?>" class="btn btn-warning">Edit Warehouse Details</a><?php endif; ?>
        </div>
           <?php endif; ?>
   </section>
@@ -38,7 +38,9 @@
     				<input type="text" id="myInputTextField" placeholder="Search" />
     			</div>
     			<div class="col-md-6 col-xs-12 text-right">
+    				<?php if(in_array('createTransfer', $user_permission)): ?>
                 	<a href="<?php echo base_url('transfers-create/'.$warehouseNameLink.'/'.$warehouse_data['id']) ?>" class="btn btn-primary">Create New Transfer</a>
+                	<?php endif; ?>
                 	<a href="#" id="download-csv" class="btn btn-warning">Download List</a>
            		</div>
     		</div>	
@@ -64,6 +66,7 @@
         <div class="box">
           <!-- /.box-header -->
           <div class="box-body hdsearch">
+          <div class="table-responsive">
           	<table id="customerTable" class="table table-bordered table-striped">
                 <thead>
                 <tr>
@@ -72,7 +75,7 @@
                     <th>Source Location</th>
                     <th>Destination Location</th>
                     <th>Status</th>
-                    <?php if(in_array('updateWarehouse', $user_permission) || in_array('deleteWarehouse', $user_permission)): ?>
+                    <?php if(in_array('updateTransfer', $user_permission) || in_array('viewTransfer', $user_permission)): ?>
                       <th>Action</th>
                     <?php endif; ?>
                 </tr>
@@ -96,7 +99,7 @@
                         <td><?php echo $v['destination_location']; ?></td>
                         <td><?php echo $status; ?></td>
                         <td>
-                           <?php if(in_array('viewProduct', $user_permission)): ?>
+                           <?php if(in_array('viewTransfer', $user_permission)): ?>
                           <a href="<?php echo base_url('transfers-view/'.$warehouseNameLink.'/'.$v['id']."/".$v['store_id']) ?>" class="">View Report</a>  
                           <?php endif; ?>&nbsp;
                         </td>
@@ -105,6 +108,7 @@
                   <?php endif; ?>
                 </tbody>
               </table>
+          </div>
           </div>
           <!-- /.box-body -->
         </div>
@@ -128,7 +132,14 @@ $(document).ready(function() {
 	var table = $('#customerTable').DataTable({
 	  	  dom: 'Bfrtip',
 	        buttons: [
-	            'csv'
+                {
+                    extend: 'csv',
+                    exportOptions: {
+                        columns: [0,1,2,3,4]
+                    },
+                    footer: false
+                   
+                },
 	        ]
 	    });
 

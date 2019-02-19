@@ -77,12 +77,16 @@
                       <br/>
                       <input type="checkbox" id="checkme" name="checkme" value="1" <?php if($warehouse_data['transaction_status'] == "transferred"): echo "checked"; endif;?> /> <label for="checkme">Mark as transferred</label> <br/>
                       <?php if($warehouse_data['transaction_status'] != "transferred"): ?>
+                      <?php if(in_array('updateTransfer', $user_permission)): ?>
                       <a href="javascript:void(0);" onclick="confirmOrder('<?php echo $warehouseId;?>','<?php echo $tid;?>');"  class="btn btn-primary">Confirm Transfer Order</a>
+                      <?php endif; ?>
                       <?php else: ?> 
                       <a href="javascript:void(0);" onclick="myFunction();" class="btn btn-primary">Download Transfer Order</a>
                       <?php endif;?>
+                      <?php if(in_array('updateTransfer', $user_permission)): ?>
                       <a href="<?php echo base_url('/transfers-edit/'.$warehouseNameLink.'/'.$warehouseId.'/'.$tid) ?>" class="btn btn-warning">Edit Transfer Order</a>
-                      
+                      <?php endif; ?>
+                      <a href="<?php echo base_url('/transfers/'.$warehouseNameLink.'/'.$warehouse_data['from_store_id']) ?>" class="btn btn-warning">Back</a>
                       </div>
                     </div>
                     <!-- /.box-body -->

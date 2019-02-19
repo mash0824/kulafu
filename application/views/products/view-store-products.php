@@ -64,9 +64,9 @@
                   <td><?php echo $product_data['sale_price']; ?></td>
                 </tr>
               </table>
-          
+          <?php if(in_array('deleteProduct', $user_permission)): ?>
 		  <a href="#" class="btn btn-danger" onclick="removeFunc('<?php echo $product_data['id'];?>,<?php echo $store_id;?>')" data-toggle="modal" data-target="#removeModal">Remove Product From Warehouse</a>
-
+			<?php endif; ?>
         </div>
         <!-- col-md-12 -->
       </div>
@@ -123,7 +123,7 @@
                         <td><?php echo $v['expiry_date']; ?></td>
                         <td><?php echo $v['stock_status']; ?></td>
                         <td>
-                           <?php if(in_array('updateProduct', $user_permission) && $v['stock_status_flag'] == 1): ?>
+                           <?php if(in_array('updateProduct', $user_permission) && in_array('updateWarehouse', $user_permission) && $v['stock_status_flag'] == 1): ?>
                           <a href="<?php echo base_url('withdrawals-create/manage/'.$v['store_id']) ?>" class="">Withdraw</a>  
                           <?php endif; ?>
                         </td>

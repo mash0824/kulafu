@@ -190,7 +190,8 @@ class Model_stores extends CI_Model
                 	(SELECT products.`name` FROM products WHERE products.id = transaction_details.product_id) as product_name,
                 	(SELECT units.`name` FROM units, products WHERE units.id = products.unit_id AND products.id = transaction_details.product_id LIMIT 1) as unit_name,
                 	(SELECT stores.`name` FROM stores WHERE stores.id = transactions.store_id) as destination_location,
-                	(SELECT stores.`name` FROM stores WHERE stores.id = transactions.from_store_id) as source_location
+                	(SELECT stores.`name` FROM stores WHERE stores.id = transactions.from_store_id) as source_location,
+	                transactions.from_store_id
                 FROM
                 	transactions, transaction_details
                 WHERE

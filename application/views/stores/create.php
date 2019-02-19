@@ -42,7 +42,7 @@
                 </div>
                 
                 <div class="form-group">
-                  <label for="name">Warehouse</label>
+                  <label for="name">Warehouse Name</label>
                   <input type="text" class="form-control" id="name" name="name" placeholder="Warehouse Name" value="" autocomplete="off">
                 </div>
                 

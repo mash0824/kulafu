@@ -135,34 +135,20 @@ class Customers extends Admin_Controller
         }
         
 		if($id) {
-			if($this->input->post('confirm')) {
-
-				//
-				$check = false;
-				if($check == true) {
-					$this->session->set_flashdata('error', 'Customer exists in the warehouse');
-	        		redirect('customers/', 'refresh');
-				}
-				else {
-				    $data = array(
-				        "is_status" => 0
-				    );
-					$delete = $this->model_customer->update($data, $id);
-					if($delete == true) {
-		        		$this->session->set_flashdata('success', 'Successfully removed');
-		        		redirect('customers/', 'refresh');
-		        	}
-		        	else {
-		        		$this->session->set_flashdata('error', 'Error occurred!!');
-		        		redirect('customers/delete/'.$id, 'refresh');
-		        	}
-				}	
-			}	
-			else {
-				$this->data['id'] = $id;
-				$this->render_template('customers/delete', $this->data);
-			}	
+		    $data = array(
+		        "is_status" => 0
+		    );
+		    $delete = $this->model_customer->update($data, $id);
+		    if($delete == true) {
+		        $response['success'] = true;
+	            $response['messages'] = "Successfully removed";
+		    }
+		    else {
+		        $response['success'] = false;
+	            $response['messages'] = "Refresh the page again!!";
+		    }
 		}
+		echo json_encode($response);
 	}
 
 

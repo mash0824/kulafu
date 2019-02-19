@@ -61,7 +61,7 @@
                                 <td><?php echo $v['product_name']; ?></td>
                                 <td><?php echo $v['quantity']; ?></td>
                                 <td><?php echo $v['unit_name']; ?></td>
-                                <td><?php echo $v['expiry_date']; ?></td>
+                                <td><?php if($v['expiry_date'] == "1970-01-01"){echo "";} else {echo $v['expiry_date'];} ; ?></td>
                               </tr>
                             <?php endforeach ?>
                           <?php endif; ?>

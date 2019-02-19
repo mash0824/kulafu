@@ -61,7 +61,7 @@
                     <div class="col-xs-12">
                         <div class="form-group col-md-4 col-xs-12">
                           <label for="notes">Reason for Withdrawal</label>
-                          <input type="text" class="form-control" id="notes" name="notes" data-row-id="row_0" placeholder="Reaseon for Withdrawal" autocomplete="off" value="<?php echo $tdata['notes']?>"  />
+                          <input type="text" class="form-control" id="notes" name="notes" data-row-id="row_0" placeholder="Reason for Withdrawal" autocomplete="off" value="<?php echo $tdata['notes']?>"  />
                         </div>
     				</div>
     				
@@ -106,8 +106,8 @@
                             	
                             </div>
                             <div class="form-group col-md-2 col-xs-12">
-                              <label for="quantity[]">Quantity to Deliver</label>
-                              <input type="number" min="0" max="" class="form-control quantityLabel" id="quantity_<?php echo $ct;?>" name="quantity[]" data-row-id="row_0" placeholder="eg. 100" autocomplete="off" value="<?php echo $value['quantity'];?>" required />
+                              <label for="quantity[]">Quantity to Withdraw</label>
+                              <input type="number" min="0" max="" class="form-control quantityLabel" id="quantity_<?php echo $ct;?>" name="quantity[]" data-row-id="row_0" placeholder="eg. 100" autocomplete="off" value="<?php echo $value['quantity'];?>" required/>
                             </div>
                             <div class="form-group col-md-2 col-xs-12">
                               <label for="unit_id[]">Unit of Measure</label>
@@ -132,6 +132,7 @@
                 <a href='#' id='addNewMappedField' class='greenlink '>Add more products</a> <br/>
                 <input type="checkbox" id="checkme" name="checkme" value="1" <?php if($tdata['transaction_status'] == "withdrew"): echo "checked";  endif;?> /> <label for="checkme">Mark as withdrew</label> <br/>
                 <button type="submit" class="btn btn-primary">Update Withdrawal Order</button>
+                <a href="<?php echo base_url('/withdrawals/'.strtolower(str_replace(" ", "-", $warehouse_data['name'])).'/'.$warehouse_data['id']) ?>" class="btn btn-warning">Back</a>
               </div>
             </form>
           <!-- /.box-body -->
@@ -173,6 +174,12 @@ $(document).ready(function() {
     		$("#messages").html('<div class="alert alert-warning alert-dismissible" role="alert">'+
             '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
             '<strong> <span class="glyphicon glyphicon-exclamation-sign"></span> </strong>quantity is greater than In Stock value.</div>');
+			$(this).focus();
+    	}
+    	if(parseFloat(qtyVal) <= 0) {
+    		$("#messages").html('<div class="alert alert-warning alert-dismissible" role="alert">'+
+            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+            '<strong> <span class="glyphicon glyphicon-exclamation-sign"></span> </strong>quantity should be greater than zero.</div>');
 			$(this).focus();
     	}
     });

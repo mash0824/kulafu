@@ -95,12 +95,16 @@
                       <br/>
                       <input type="checkbox" id="checkme" name="checkme" value="1" <?php if($warehouse_data['transaction_status'] == "delivered"): echo "checked"; endif;?> /> <label for="checkme">Mark as delivered</label> <br/>
                       <?php if($warehouse_data['transaction_status'] != "delivered"): ?>
+                      <?php if(in_array('updateDelivery', $user_permission)): ?>
                       <a href="javascript:void(0);" onclick="confirmOrder('<?php echo $warehouseId;?>','<?php echo $tid;?>');"  class="btn btn-primary">Confirm Delivery Order</a>
+                      <?php endif;?>
                       <?php else: ?> 
                       <a href="javascript:void(0);" onclick="myFunction();" class="btn btn-primary">Download Delivery Order</a>
                       <?php endif;?>
+                      <?php if(in_array('updateDelivery', $user_permission)): ?>
                       <a href="<?php echo base_url('/deliveries-edit/'.$warehouseNameLink.'/'.$warehouseId.'/'.$tid) ?>" class="btn btn-warning">Edit Delivery Order</a>
-                      
+                      <?php endif;?>
+                      <a href="<?php echo base_url('/deliveries/'.$warehouseNameLink.'/'.$warehouseId) ?>" class="btn btn-warning">Back</a>
                       </div>
                     </div>
                     <!-- /.box-body -->
