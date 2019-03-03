@@ -201,6 +201,7 @@ class Warehouses extends Admin_Controller
 	    //$warehouse_products = getAllTransactionDetails
 	    $warehouse_products = $this->model_stores->getViewTransactions($tid,$warehouseId,"delivery");
 	    if(!empty($warehouse_products)) {
+	        if($warehouse_products[0]['transaction_status'] != "delivered") {$this->session->set_flashdata('confirm', 'Order has been created and is now pending');}
 	        $tdata = array(
 	            'order_date' => $warehouse_products[0]['order_date'],
 	            'display_id' => $warehouse_products[0]['delivery_id'],
@@ -488,6 +489,7 @@ class Warehouses extends Admin_Controller
 	    //$warehouse_products = getAllTransactionDetails
 	    $warehouse_products = $this->model_stores->getViewTransactions($tid,$warehouseId,"pickup");
 	    if(!empty($warehouse_products)) {
+	        if($warehouse_products[0]['transaction_status'] != "delivered") {$this->session->set_flashdata('confirm', 'Order has been created and is now pending');}
 	        $tdata = array(
 	            'order_date' => $warehouse_products[0]['order_date'],
 	            'display_id' => $warehouse_products[0]['delivery_id'],
@@ -647,10 +649,12 @@ class Warehouses extends Admin_Controller
 	    $warehouse_products = $this->model_products->getProductListByWarehouseNonGroup($warehouseId);
 	    $customers = $this->model_stores->getStoresData();
 	    $units = $this->model_units->getUnitsData();
+	    $customers_r = $this->model_customer->getCustomerData();
 	
 	
 	    $this->form_validation->set_rules('from_store_id', 'Source Location', 'trim|required');
 	    $this->form_validation->set_rules('store_id', 'Destination Location', 'trim|required');
+	    $this->form_validation->set_rules('customer_id', 'Customer', 'trim');
 	    $this->form_validation->set_rules('product_id[]', 'Product name', 'trim|required');
 	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric|greater_than[0]');
 	    
@@ -660,6 +664,7 @@ class Warehouses extends Admin_Controller
 	        $transaction_data = array(
 	            'display_id' => $display_id,
 	            'store_id' => $this->input->post('store_id'),
+	            'customer_id' => $this->input->post('customer_id'),
 	            'from_store_id' => $this->input->post('from_store_id'),
 	            'transaction_status' => ($this->input->post('checkme') == 1 ? "transferred":"pending"),
 	            'transaction_type' => "transfer",
@@ -706,6 +711,7 @@ class Warehouses extends Admin_Controller
 	        $this->data['products'] = $warehouse_products;
 	        $this->data['warehouse_data'] = $warehouse_data;
 	        $this->data['customers'] = $customers;
+	        $this->data['customers_r'] = $customers_r;
 	        $this->data['units'] = $units;
 	        $this->render_template('stores/transfers-create', $this->data);
 	    }
@@ -726,6 +732,7 @@ class Warehouses extends Admin_Controller
 	    //$warehouse_products = getAllTransactionDetails
 	    $warehouse_products = $this->model_stores->getViewTransactions($tid,$warehouseId,"transfer");
 	    if(!empty($warehouse_products)) {
+	        if($warehouse_products[0]['transaction_status'] != "transferred") {$this->session->set_flashdata('confirm', 'Transfer has been created and is now pending');}
 	        $tdata = array(
 	            'order_date' => $warehouse_products[0]['order_date'],
 	            'display_id' => $warehouse_products[0]['delivery_id'],
@@ -795,13 +802,14 @@ class Warehouses extends Admin_Controller
 	    $customers = $this->model_stores->getStoresData();
 	    $units = $this->model_units->getUnitsData();
 	    $transactions = $this->model_stores->getViewTransactions($tid,$to_store_id,"transfer");
-	
+	    $customers_r = $this->model_customer->getCustomerData();
 	    if(!empty($transactions)) {
 	        $tdata = array(
 	            'display_id' => $transactions[0]['delivery_id'],
 	            'store_id' => $transactions[0]['store_id'],
 	            'destination_location' => $transactions[0]['destination_location'],
 	            'source_location' => $transactions[0]['source_location'],
+	            'customer_id' => $transactions[0]['customer_id'],
 	            'transaction_status' => $transactions[0]['transaction_status'],
 	            'mapped_count' => count($transactions)
 	        );
@@ -812,13 +820,14 @@ class Warehouses extends Admin_Controller
 	    $this->form_validation->set_rules('store_id', 'Destination Location', 'trim|required');
 	    $this->form_validation->set_rules('product_id[]', 'Product name', 'trim|required');
 	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric|greater_than[0]');
-	
+	    $this->form_validation->set_rules('customer_id', 'Customer', 'trim');
 	
 	    if ($this->form_validation->run() == TRUE) {
 	        
 	        
 	        $transaction_data = array(
 	            'store_id' => $this->input->post('store_id'),
+	            'customer_id' => $this->input->post('customer_id'),
 	            'transaction_status' => ($this->input->post('checkme') == 1 ? "transferred":"pending"),
 	        );
 	        $stocks = $this->model_stores->getStockID($tid);
@@ -851,6 +860,7 @@ class Warehouses extends Admin_Controller
 	    }
 	    else {
 	        $this->data['transactions'] = $transactions;
+	        $this->data['customers_r'] = $customers_r;
 	        $this->data['tdata'] = $tdata;
 	        $this->data['display_id'] = $display_id;
 	        $this->data['products'] = $warehouse_products;
@@ -947,7 +957,7 @@ class Warehouses extends Admin_Controller
 	    $nextID = $this->model_stores->getNextIncrementIDT();
 	    $display_id = "WD-MO-".sprintf("%011s",$nextID[0]['nextId']);
 	    //get all products by stores which is not deleted and removed
-	    $warehouse_products = $this->model_products->getProductListByWarehouseNonGroup($warehouseId);
+	    $warehouse_products = $this->model_products->getProductListByWarehouseNonGroup($warehouseId,1);
 	    $customers = $this->model_stores->getStoresData();
 	    $units = $this->model_units->getUnitsData();
 	
@@ -1006,6 +1016,7 @@ class Warehouses extends Admin_Controller
 	    //$warehouse_products = getAllTransactionDetails
 	    $warehouse_products = $this->model_stores->getViewTransactions($tid,$warehouseId,"withdrawal");
 	    if(!empty($warehouse_products)) {
+	        if($warehouse_products[0]['transaction_status'] != "withdrew") {$this->session->set_flashdata('confirm', 'Withdrawal has been created and is now pending');}
 	        $tdata = array(
 	            'order_date' => $warehouse_products[0]['order_date'],
 	            'display_id' => $warehouse_products[0]['delivery_id'],
@@ -1034,7 +1045,7 @@ class Warehouses extends Admin_Controller
 	    $warehouse_data = $this->model_stores->getStoresData($warehouseId);
 	    $this->data['warehouse_data'] = $warehouse_data;
 	    //get all products by stores which is not deleted and removed
-	    $warehouse_products = $this->model_products->getProductListByWarehouseNonGroup($warehouseId);
+	    $warehouse_products = $this->model_products->getProductListByWarehouseNonGroup($warehouseId,1);
 	    $customers = $this->model_stores->getStoresData();
 	    $units = $this->model_units->getUnitsData();
 	    $transactions = $this->model_stores->getViewTransactions($tid,$warehouseId,"withdrawal");

@@ -34,7 +34,7 @@ class Customers extends Admin_Controller
 
         $nextID = $this->model_customer->getNextIncrementID();
         $cs_id = "CS-".sprintf("%011s",$nextID[0]['nextId']);
-		$this->form_validation->set_rules('customer_name', 'Customer name', 'required');
+		$this->form_validation->set_rules('customer_name', 'Customer name', 'required|is_unique[customers.customer_name]');
 		$this->form_validation->set_rules('address', 'Delivery Address', 'trim|required');
 		$this->form_validation->set_rules('contact_person', 'Contact Person', 'trim|required');
 		$this->form_validation->set_rules('email', 'Email', 'trim|required');
@@ -92,7 +92,7 @@ class Customers extends Admin_Controller
 
 		if($id) {
 
-			$this->form_validation->set_rules('customer_name', 'Customer name', 'required');
+			$this->form_validation->set_rules('customer_name', 'Customer name', 'required|is_unique[customers.customer_name]');
 			$this->form_validation->set_rules('address', 'Delivery Address', 'trim|required');
 			$this->form_validation->set_rules('contact_person', 'Contact Person', 'trim|required');
 			$this->form_validation->set_rules('email', 'Email', 'trim|required');

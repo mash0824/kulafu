@@ -165,33 +165,119 @@ class Model_stores extends CI_Model
 	
 	public function getViewTransactions($tid,$store_id,$type="delivery"){
 	    if($tid && $store_id) {
+// 	        $sql = "
+// 	            SELECT
+//                 	DATE_FORMAT(create_date,'%m-%d-%Y') as order_date,
+//                 	transactions.display_id as delivery_id,
+// 	                transactions.store_id,
+//                 	transactions.po_number,
+//                 	(
+//                 		SELECT
+//                 			customer_name
+//                 		FROM
+//                 			customers
+//                 		WHERE
+//                 			customers.id = transactions.customer_id
+//                 	) as customer_name,
+// 	                transactions.address,
+//                 	transactions.notes,
+//                 	transactions.transaction_status,
+//                 	transaction_details.quantity,
+//                 	transaction_details.product_id,
+//                 	transactions.customer_id,
+// 	                (SELECT is_deleted FROM products WHERE transaction_details.product_id = products.id ) as is_prod_deleted,
+//                 	transaction_details.sale_price,
+//                 	(transaction_details.quantity * transaction_details.sale_price) as sale_amount,
+//                 	(SELECT products.`name` FROM products WHERE products.id = transaction_details.product_id) as product_name,
+//                 	(SELECT units.`name` FROM units, products WHERE units.id = products.unit_id AND products.id = transaction_details.product_id LIMIT 1) as unit_name,
+//                 	(SELECT stores.`name` FROM stores WHERE stores.id = transactions.store_id) as destination_location,
+//                 	(SELECT stores.`name` FROM stores WHERE stores.id = transactions.from_store_id) as source_location,
+// 	                transactions.from_store_id
+//                 FROM
+//                 	transactions, transaction_details
+//                 WHERE
+//                 	transactions.store_id = '".intval($store_id)."' AND transactions.id = transaction_details.transaction_id 
+//                 AND transactions.transaction_type = '$type' AND transactions.id = '".intval($tid)."'
+//                 ORDER BY quantity DESC";
 	        $sql = "
 	            SELECT
-                	DATE_FORMAT(create_date,'%m-%d-%Y') as order_date,
-                	transactions.display_id as delivery_id,
-	                transactions.store_id,
-                	transactions.po_number,
-                	(
-                		SELECT
-                			customer_name
-                		FROM
-                			customers
-                		WHERE
-                			customers.id = transactions.customer_id
-                	) as customer_name,
-	                transactions.address,
-                	transactions.notes,
-                	transactions.transaction_status,
-                	transaction_details.quantity,
-                	transaction_details.product_id,
-                	transactions.customer_id,
-                	transaction_details.sale_price,
-                	(transaction_details.quantity * transaction_details.sale_price) as sale_amount,
-                	(SELECT products.`name` FROM products WHERE products.id = transaction_details.product_id) as product_name,
-                	(SELECT units.`name` FROM units, products WHERE units.id = products.unit_id AND products.id = transaction_details.product_id LIMIT 1) as unit_name,
-                	(SELECT stores.`name` FROM stores WHERE stores.id = transactions.store_id) as destination_location,
-                	(SELECT stores.`name` FROM stores WHERE stores.id = transactions.from_store_id) as source_location,
-	                transactions.from_store_id
+	DATE_FORMAT(create_date , '%m-%d-%Y') as order_date ,
+	transactions.display_id as delivery_id ,
+	transactions.store_id ,
+	transactions.po_number ,
+	(
+		SELECT
+			customer_name
+		FROM
+			customers
+		WHERE
+			customers.id = transactions.customer_id
+	) as customer_name ,
+	transactions.address ,
+	transactions.notes ,
+	transactions.transaction_status ,
+	transaction_details.quantity ,
+	transaction_details.product_id ,
+	transactions.customer_id ,
+	(
+		SELECT
+			is_deleted
+		FROM
+			products
+		WHERE
+			transaction_details.product_id = products.id
+	) as is_prod_deleted ,
+	transaction_details.sale_price ,
+	(
+		transaction_details.quantity * transaction_details.sale_price
+	) as sale_amount ,
+	(
+		SELECT
+			products.`name`
+		FROM
+			products
+		WHERE
+			products.id = transaction_details.product_id
+	) as product_name ,
+	(
+		SELECT
+			units.`name`
+		FROM
+			units ,
+			products
+		WHERE
+			units.id = products.unit_id
+		AND products.id = transaction_details.product_id
+		LIMIT 1
+	) as unit_name ,
+	(
+		SELECT
+			units.`id`
+		FROM
+			units ,
+			products
+		WHERE
+			units.id = products.unit_id
+		AND products.id = transaction_details.product_id
+		LIMIT 1
+	) as unit_id ,
+	(
+		SELECT
+			stores.`name`
+		FROM
+			stores
+		WHERE
+			stores.id = transactions.store_id
+	) as destination_location ,
+	(
+		SELECT
+			stores.`name`
+		FROM
+			stores
+		WHERE
+			stores.id = transactions.from_store_id
+	) as source_location ,
+	transactions.from_store_id
                 FROM
                 	transactions, transaction_details
                 WHERE

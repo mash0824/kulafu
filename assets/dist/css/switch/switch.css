@@ -121,14 +121,14 @@ label {
     background-color: #556BB2;
 }
 .skin-blue .main-header .navbar .sidebar-toggle {
-    color: #000;
-	float:right;
+    color: #fff;
+	float:left;
 }
 .skin-blue .main-header .navbar .sidebar-toggle:hover {
     background-color: #f3f9ff;
 }
 .skin-blue .main-header .navbar .sidebar-toggle:hover {
-    color: #000;
+    color: #fff;
     background: rgba(0,0,0,0.1);
 }
 

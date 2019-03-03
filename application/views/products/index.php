@@ -12,7 +12,8 @@
       
       <?php if(in_array('createProduct', $user_permission)): ?>
       <div class="col-xs-12 col-sm-12 col-md-6 text-right">
-            <a href="<?php echo base_url('products/create') ?>" class="btn btn-primary">Add New Product</a>
+            <a href="<?php echo base_url('products/create') ?>" class="btn btn-primary">Create New Product</a>
+            <a href="#" id="download-csv" class="btn btn-warning">Download List</a>
        </div>
           <?php endif; ?>
   </section>
@@ -34,6 +35,11 @@
           <div class="alert alert-error alert-dismissible" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <?php echo $this->session->flashdata('error'); ?>
+          </div>
+        <?php elseif($this->session->flashdata('errorc')): ?>
+          <div class="alert alert-error alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <?php echo $this->session->flashdata('errorc'); ?>
           </div>
         <?php endif; ?>
 
@@ -113,8 +119,22 @@ $(document).ready(function() {
   // initialize the datatable 
   manageTable = $('#manageTable').DataTable({
     'ajax': base_url + 'products/fetchProductData',
-    'order': []
+    'order': [],
+    buttons: [
+        {
+            extend: 'csv',
+            exportOptions: {
+                columns: [0,1,2,3,4,5,6,7]
+            },
+            footer: false
+           
+        },
+    ]
   });
+
+  $("#download-csv").on("click", function() {
+	  manageTable.button( '.buttons-csv' ).trigger();
+	});
 
 });
 

@@ -66,6 +66,7 @@
         <div class="box">
           <!-- /.box-header -->
           <div class="box-body hdsearch">
+          <h4>Pending Withdrawals</h4>
           	<div class="table-responsive">
           	<table id="customerTable" class="table table-bordered table-striped">
                 <thead>
@@ -89,13 +90,57 @@
                             $status = "<span class='redlink'>".ucfirst($status)."</span>";
                         }
                         else {
-                            $status = "<span class='greenlink'>Transferred</span>";
+                            $status = "<span class='greenlink'>Withdrawn</span>";
                         }
                     ?>
                       <tr>
                         <td><?php echo date("m-d-Y", strtotime($v['create_date'])) ?></td>
                         <td><?php echo $v['display_id']; ?></td>
-                        <td><?php echo $v['source_location']; ?></td>
+                        <td><?php echo $v['destination_location']; ?></td>
+                        <td><?php echo $status; ?></td>
+                        <td>
+                           <?php if(in_array('viewWithdrawal', $user_permission)): ?>
+                          <a href="<?php echo base_url('withdrawals-view/'.$warehouseNameLink.'/'.$v['id']."/".$warehouse_data['id']) ?>" class="">View Report</a>  
+                          <?php endif; ?>&nbsp;
+                        </td>
+                      </tr>
+                    <?php endforeach ?>
+                  <?php endif; ?>
+                </tbody>
+              </table>
+          </div>
+          <div>&nbsp;</div>
+          <h4>All Withdrawals</h4>
+          <div class="table-responsive">
+          	<table id="customerTable2" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                  	<th>Date</th>
+                    <th>Withdrawal ID</th>
+                    <th>Source Location</th>
+                    <th>Status</th>
+                    
+                    <?php if(in_array('updateWithdrawal', $user_permission) || in_array('viewWithdrawal', $user_permission)): ?>
+                      <th>Action</th>
+                    <?php endif; ?>
+                </tr>
+                </thead>
+                <tbody>
+                  <?php if($delivery_data): ?>                  
+                    <?php foreach ($delivery_data as $k => $v): ?>
+                    <?php 
+                        $status = $v['transaction_status'];
+                        if($status == "pending") {
+                            $status = "<span class='redlink'>".ucfirst($status)."</span>";
+                        }
+                        else {
+                            $status = "<span class='greenlink'>Withdrawn</span>";
+                        }
+                    ?>
+                      <tr>
+                        <td><?php echo date("m-d-Y", strtotime($v['create_date'])) ?></td>
+                        <td><?php echo $v['display_id']; ?></td>
+                        <td><?php echo $v['destination_location']; ?></td>
                         <td><?php echo $status; ?></td>
                         <td>
                            <?php if(in_array('viewWithdrawal', $user_permission)): ?>
@@ -139,17 +184,30 @@ $(document).ready(function() {
                     footer: false
                    
                 },
-	        ]
+	        ],
+		  	"oSearch": {"sSearch": "Pending"}
     
 	    });
-
+	var table2 = $('#customerTable2').DataTable({
+	  	  dom: 'Bfrtip',
+	        buttons: [
+	                  {
+	                      extend: 'csv',
+	                      exportOptions: {
+	                          columns: [0,1,2,3]
+	                      },
+	                      footer: false
+	                     
+	                  },
+	  	        ]
+	    });
 	$('#myInputTextField').keyup(function(){
 		table.search($(this).val()).draw() ;
 	})
   $("#warehouseMainNav").addClass('active');
   $("#withdrawalsNav").addClass('active');
   $("#download-csv").on("click", function() {
-	    table.button( '.buttons-csv' ).trigger();
+	    table2.button( '.buttons-csv' ).trigger();
 	});
 
 });

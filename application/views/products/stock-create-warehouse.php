@@ -45,9 +45,9 @@
 					<div class="col-xs-12">
                         <div class="form-group col-md-3 col-xs-12">
         					<label for="pd_disp_id">Sales Invoice No.</label>
-                          <input type="text" class="form-control" id="sales_invoice_id" name="sales_invoice_id" placeholder="eg. SI-000001" autocomplete="off" value=""  />
+                          <input type="text" class="form-control" id="sales_invoice_id" name="sales_invoice_id" placeholder="eg. SI-000001" autocomplete="off" value=""  required />
                         </div>
-                        <div class="form-group col-md-4 col-xs-12">
+                        <div class="form-group col-md-3 col-xs-12">
                           <label for="unit_id">Destination Location</label>
                           <select class="form-control select_group" id="store_id" name="store_id">
                           	<option value=""></option>
@@ -56,13 +56,17 @@
                             <?php endforeach ?>
                           </select>
                         </div>
+                        <div class="form-group col-md-3 col-xs-12">
+                          <label for="supplier_name">Supplier Name</label>
+                          <input type="text" class="form-control" id="supplier_name" name="supplier_name" placeholder="eg Supplier Name" autocomplete="off" value=""  />
+                        </div>
                         <input id="mgrBuyer_new_qty_mappedFields" type='hidden' value="0" />
     				</div>
                     <div class="col-xs-12" id="allMappedFields">
                         <div class='mappedFieldTemplate' id='mappedFieldTemplate_1' id='mappedFieldTemplate_1' >
                         	<div class="form-group col-md-5 col-xs-12">
                               <label for="product_id[]">Product name</label>
-                              <select class="form-control select_group  fieldLabel" id="product_id_1" data-row-id="row_1"  name="product_id[]">
+                              <select class="form-control select_group  fieldLabel" id="product_id_1" data-row-id="row_1"  name="product_id[]" required>
                               	<option value=""></option>
                                 <?php foreach ($products as $k => $v): ?>
                                   <option value="<?php echo $v['id'] ?>"><?php echo $v['name'] ?></option>
@@ -71,12 +75,12 @@
                             </div>
                             <div class="form-group col-md-2 col-xs-12">
                               <label for="max_quantity">Quantity</label>
-                              <input type="text" class="form-control fieldLabel1" id="quantity_1" name="quantity[]" placeholder="eg. 100" autocomplete="off" value="<?php echo $this->input->post('quantity[]') ?>" required />
+                              <input type="number" min="0" max="" class="form-control fieldLabel1" id="quantity_1" name="quantity[]" placeholder="eg. 100" autocomplete="off" value="" required />
                             </div>
                             
                             <div class="form-group col-md-2 col-xs-12">
                               <label for="expiry_date">Expiry Date</label>
-                              <input type="text" class="form-control datepicker fieldLabel2" id="expiry_date_1" name="expiry_date[]" placeholder="eg. 12/24/2019" autocomplete="off" value="<?php echo $this->input->post('expiry_date') ?>" readonly /> 
+                              <input type="text" class="form-control datepicker fieldLabel2" id="expiry_date_1" name="expiry_date[]" placeholder="eg. 12/24/2019" autocomplete="off" value="" readonly /> 
                             </div>
                             <div class="form-group col-md-2 col-xs-12"><a href="#" class="btn btn-danger removeMappedField"><i class="fa fa-minus fa-inverse"></i></a></div>
                         </div>

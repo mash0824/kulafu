@@ -70,6 +70,17 @@
                           </select>
                         </div>
     				</div>
+    				<div class="col-xs-12">
+    					<div class="form-group col-md-4 col-xs-12">
+                          <label for="customer_id">Customer or Company Name</label>
+                          <select class="form-control select_group" id="customer_id" name="customer_id">
+                          	<option value=""></option>
+                              <?php foreach ($customers_r as $k => $v): ?>
+                              <option value="<?php echo $v['id'] ?>" ><?php echo $v['customer_name'] ?></option>
+                            <?php endforeach ?>
+                          </select>
+                        </div>
+    				</div>
                     <div class="col-xs-12" id="allMappedFields">
                         <div class='col-xs-12 mappedFieldTemplate' id='mappedFieldTemplate_0' id='mappedFieldTemplate_0' >
                         	<div class="form-group col-md-4 col-xs-12">
@@ -94,7 +105,7 @@
                             	
                             </div>
                             <div class="form-group col-md-2 col-xs-12">
-                              <label for="quantity[]">Quantity to Deliver</label>
+                              <label for="quantity[]">Quantity</label>
                               <input type="number" min="0" max="" class="form-control quantityLabel" id="quantity_0" name="quantity[]" data-row-id="row_0" placeholder="eg. 100" autocomplete="off" value="" required />
                             </div>
                             <div class="form-group col-md-2 col-xs-12">

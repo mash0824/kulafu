@@ -74,7 +74,7 @@
     				</div>
                     <div class="col-xs-12" id="allMappedFields">
                         <div class='col-xs-12 mappedFieldTemplate' id='mappedFieldTemplate_0' id='mappedFieldTemplate_0' >
-                        	<div class="form-group col-md-2 col-xs-12">
+                        	<div class="form-group col-md-4 col-xs-12">
                               <label for="product_id[]">Product name</label>
                               <select class="form-control select_group  prodLabel" id="product_id_0" data-row-id="row_0"  name="product_id[]" required>
                               	<option value=""></option>
@@ -95,7 +95,7 @@
                             	
                             </div>
                             <div class="form-group col-md-2 col-xs-12">
-                              <label for="quantity[]">Quantity to Pickup</label>
+                              <label for="quantity[]">Quantity</label>
                               <input type="number" min="0" max="" class="form-control quantityLabel" id="quantity_0" name="quantity[]" data-row-id="row_0" placeholder="eg. 100" autocomplete="off" value="" required />
                             </div>
                             <div class="form-group col-md-2 col-xs-12">

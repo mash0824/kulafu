@@ -75,9 +75,21 @@
                         <div class='col-xs-12 mappedFieldTemplate' id='mappedFieldTemplate_<?php echo $ct;?>' id='mappedFieldTemplate_<?php echo $ct;?>' >
                         	<div class="form-group col-md-4 col-xs-12">
                               <label for="product_id[]">Product name</label>
-                              <select class="form-control select_group  prodLabel" id="product_id_<?php echo $ct;?>" data-row-id="row_<?php echo $ct;?>"  name="product_id[]" required>
+                              <select class="form-control select_group  prodLabel" id="product_id_<?php echo $ct;?>" data-row-id="row_<?php echo $ct;?>"  name="product_id[]" required <?php if($value['is_prod_deleted'] == 1):?>disabled<?php endif;?>>
                               	<option value=""></option>
                                 <?php 
+                                if($value['is_prod_deleted'] == 1) {
+                                    $stock_count = $value['quantity'];
+                                    $value['stock_count'] = $stock_count;
+                                    $value['sale_price'] = 0;
+                                    $value['cost'] = 0;
+                                    $value['less_stock'] = 0;
+                                
+                                ?>
+                                <option value="<?php echo $value['product_id'] ?>" selected="selected" data-less="<?php echo intval($value['less_stock']) ?>"  data-cost="<?php echo $value['cost']; ?>" data-price="<?php echo $value['sale_price']; ?>" data-stock="<?php echo $stock_count; ?>" data-unit="<?php echo $value['unit_id'] ?>"><?php echo $value['product_name'] ?></option>
+                                <?php     
+                                }
+                                else {
                                     foreach ($products as $k => $v):
                                     if($value['product_id'] == $v['product_id']) {
                                         $stock_count = (($v['stock_count'] - $v['less_stock']) > 0 ? intval($v['stock_count'] - $v['less_stock']) : 0);
@@ -95,6 +107,7 @@
                                 ?>
                                   <option value="<?php echo $v['product_id'] ?>" <?php if($value['product_id'] == $v['product_id']): echo "selected"; endif;?> data-less="<?php echo intval($less_count) ?>"  data-cost="<?php echo $v['cost']; ?>" data-price="<?php echo $v['sale_price']; ?>" data-stock="<?php echo $stock_count; ?>" data-unit="<?php echo $v['unit_id'] ?>"><?php echo $v['name'] ?></option>
                                 <?php endforeach ?>
+                                <?php } ?>
                               </select>
                             </div>
                             <div class="form-group col-md-2 col-xs-12">
@@ -106,12 +119,12 @@
                             	
                             </div>
                             <div class="form-group col-md-2 col-xs-12">
-                              <label for="quantity[]">Quantity to Withdraw</label>
-                              <input type="number" min="0" max="" class="form-control quantityLabel" id="quantity_<?php echo $ct;?>" name="quantity[]" data-row-id="row_0" placeholder="eg. 100" autocomplete="off" value="<?php echo $value['quantity'];?>" required/>
+                              <label for="quantity[]">Quantity</label>
+                              <input type="number" min="0" max="" class="form-control quantityLabel" id="quantity_<?php echo $ct;?>" name="quantity[]" data-row-id="row_0" placeholder="eg. 100" autocomplete="off" value="<?php echo $value['quantity'];?>" required  <?php if($value['is_prod_deleted'] == 1):?>disabled<?php endif;?>/>
                             </div>
                             <div class="form-group col-md-2 col-xs-12">
                               <label for="unit_id[]">Unit of Measure</label>
-                              <select class="form-control select_group  unitLabel" id="unit_id_<?php echo $ct;?>" data-row-id="row_<?php echo $ct;?>" name="unit_id[]">
+                              <select class="form-control select_group  unitLabel" id="unit_id_<?php echo $ct;?>" data-row-id="row_<?php echo $ct;?>" name="unit_id[]" readonly>
                               	<option value=""></option>
                                 <?php foreach ($units as $k => $v): ?>
                                   <option value="<?php echo $v['id'] ?>" <?php if($value['unit_id'] == $v['id']): echo "selected"; endif;?>><?php echo $v['name'] ?></option>

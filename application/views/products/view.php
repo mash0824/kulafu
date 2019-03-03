@@ -129,7 +129,7 @@
                         <td><?php echo $v['quantity']; ?></td>
                         <td><?php echo $v['unit_name']; ?></td>
                         <td><?php if($v['expiry_date'] == "1970-01-01"){echo "";} else {echo $v['expiry_date'];} ?></td>
-                        <td><?php if($v['transaction_id'] > 0) {echo "<span class='normal'>Transferred</span>";} else { echo $v['stock_status'];} ?></td>
+                        <td><?php echo $v['stock_status']; ?></td>
                         <td>
                            <?php if(in_array('updateProduct', $user_permission) && $v['stock_status_flag'] == 1): ?>
                           <a href="<?php echo base_url('withdrawals-create/manage/'.$v['store_id']) ?>" class="">Withdraw</a>  

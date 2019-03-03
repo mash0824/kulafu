@@ -10,13 +10,14 @@ class Products extends Admin_Controller
 
 		$this->not_logged_in();
 
-		$this->data['page_title'] = 'Products';
+		$this->data['page_title'] = 'All-Products-'.date("Y-m-d");
 
 		$this->load->model('model_products');
 		$this->load->model('model_category');
 		$this->load->model('model_stores');
 		$this->load->model('model_brands');
 		$this->load->model('model_units');
+		$this->load->model('model_customer');
 	}
 
     /* 
@@ -27,7 +28,9 @@ class Products extends Admin_Controller
         if(!in_array('viewProduct', $this->permission)) {
             redirect('dashboard', 'refresh');
         }
-
+        ob_start();
+        $this->fetchProductData();
+        $fetch = ob_get_clean();
 		$this->render_template('products/index', $this->data);	
 	}
 	
@@ -65,22 +68,55 @@ class Products extends Admin_Controller
             $buttons = '';
             $stock = $this->model_products->getInStockCount($value['id']);
             $expiry = $this->model_products->getExpiryDetails($value['id']);
+            $expiryDetails = $this->model_products->getExpiryDetailNew($value['id']);
+            
+//             echo "<pre>";
+//             print_r($expiry);
+//             print_r($$expiryDetails);
+            
             if(in_array('viewProduct', $this->permission)) {
     			$buttons .= '<a href="'.base_url('products/view/'.$value['id']).'" class="">View</a>';
             }
-            if(in_array('deleteProduct', $this->permission) && isset($expiry[0]['store_id']) && $expiry[0]['store_id'] > 0) { 
-    			$buttons .= '&nbsp;<a href="'.base_url('withdrawals-create/manage/'.$expiry[0]['store_id']).'" class="redlink">Withdraw</a>';
+//             if(in_array('deleteProduct', $this->permission) && isset($expiry[0]['store_id']) && $expiry[0]['store_id'] > 0) { 
+//     			$buttons .= '&nbsp;<a href="'.base_url('withdrawals-create/manage/'.$expiry[0]['store_id']).'" class="redlink">Withdraw</a>';
+//             }
+            $my_stock_count = (isset($stock[0]['stock_count']) ? (($stock[0]['stock_count'] - $stock[0]['less_count']) > 0 ? ($stock[0]['stock_count'] - $stock[0]['less_count']) : 0) : 0);
+            
+            if($my_stock_count <= 0) {
+                $status = "<span class='expiring'>Out of Stock</span>";
+                $this->session->set_flashdata('errorc', 'Out of Stock');
+            }
+            elseif($my_stock_count <= 10){
+                $status = "<span class='expiring'>Low Stock</span>";
+                $this->session->set_flashdata('errorc', 'Low Stock');
+            }
+            elseif(isset($expiry[0]['total_quantity'])  && isset($expiryDetails[0]['expiry_total'])) {
+                if(intval($expiry[0]['total_quantity']) > 0 && $expiryDetails[0]['expiry_total'] > 0) {
+                    if($expiryDetails[0]['expiry_total'] >= $expiry[0]['total_quantity']) {
+                        $status = "<span class='normal'>Normal</span>";
+                    }
+                    else {
+                        $status = "<span class='expiring'>Expiring</span>";
+                        $buttons .= '&nbsp;<a href="'.base_url('withdrawals-create/manage/'.$expiry[0]['store_id']).'" class="redlink">Withdraw</a>';
+                    }
+                }
+                else {
+                    $status = "<span class='normal'>Normal</span>";
+                }
+            }
+            else {
+                $status = "<span class='normal'>Normal</span>";
             }
             
 			$result['data'][$key] = array(
 				$value['sku'],
 				$value['name'],
                 (($value['brand_id'] > 0) ? $brands[$value['brand_id']] : "") ,
-				(isset($stock[0]['stock_count']) ? ($stock[0]['stock_count'] - $stock[0]['less_count']) : 0),
+				$my_stock_count,
 		        (($value['unit_id'] > 0) ? $units[$value['unit_id']] : "") ,  
                 $value['sale_price'],
                 $value['cost'],
-                (isset($expiry[0]['product_id']) ? "<span class='expiring'>Expiring</span>" : "<span class='normal'>Normal</span>"),
+			    $status,
 				$buttons
 			);
 		} // /foreach
@@ -244,6 +280,40 @@ class Products extends Admin_Controller
 	    if($id) {
 	        $customer_data = $this->model_products->getProductData($id);
 	        $stock_data = $this->model_products->getStockHistory($id);
+	        
+	        //fix transfer value
+	        $tmpQty = 0;
+	        foreach ($stock_data as $k => $val) {
+	            if(!empty($val['transaction_id'])) {
+	                $tmpQty = $val['quantity'];
+	            }
+	            else {
+	                $t = ($val['quantity'] - $tmpQty);
+	                $stock_data[$k]['quantity'] = ( $t > 0 ? $t  : 0);
+	                $tmpQty = 0;
+	            }
+	        }
+	        //fix sort of data;
+	        usort($stock_data, function($a, $b) {
+	            return $a['id'] - $b['id'];
+	        });
+// 	        echo "<prE>";
+// 	        print_r($stock_data);
+	        $expiry_total = array();
+	        foreach ($stock_data as $k => $val) {
+	            if($val['stock_status_flag'] == 1) {
+	                if(!isset($expiry_total[$val['store_id']]['total'])) {
+	                   $expiryDetails = $this->model_products->getExpiryDetailNew($id,$val['store_id']);
+	                   $expiry_total[$val['store_id']]['total'] = $expiryDetails[0]['expiry_total'];
+	                }
+	                if($expiry_total[$val['store_id']]['total'] >= $val['quantity']) {
+	                    $stock_data[$k]['stock_status_flag'] = 0;
+	                    $stock_data[$k]['stock_status'] = "<span class='expiring'>Withdrawn</span>";
+	                    $expiry_total[$val['store_id']]['total'] = $expiry_total[$val['store_id']]['total'] - $val['quantity'];
+	                }
+	            }
+	        }
+// 	        print_r($stock_data);
 	        $this->data['product_data'] = $customer_data;
 	        $this->data['stock_data'] = $stock_data;
 	        $this->render_template('products/view', $this->data);
@@ -328,12 +398,14 @@ class Products extends Admin_Controller
 	    $this->form_validation->set_rules('store_id', 'Destination', 'trim|required');
 	    $this->form_validation->set_rules('product_id[]', 'Product name', 'trim|required');
 	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric');
+	    $this->form_validation->set_rules('supplier_name', 'Supplier Name', 'trim');
 	    //$this->form_validation->set_rules('expiry_date[]', 'Expiry Date', 'trim|required');
 	    
 	    if ($this->form_validation->run() == TRUE) {
 	        $stock_data = array(
 	            'sales_invoice_id' => $this->input->post('sales_invoice_id'),
 	            'store_id' => $this->input->post('store_id'),
+	            'supplier_name' => $this->input->post('supplier_name'),
 	        );
 	        //update stocks
 	        $this->model_products->updateStocks($stock_data,$stock_id);
@@ -431,6 +503,7 @@ class Products extends Admin_Controller
 	     
 	    $this->form_validation->set_rules('sales_invoice_id', 'Sales Invoice', 'trim|required');
 	    $this->form_validation->set_rules('store_id', 'Destination', 'trim|required');
+	    $this->form_validation->set_rules('supplier_name', 'Supplier Name', 'trim');
 	    $this->form_validation->set_rules('product_id[]', 'Product name', 'trim|required');
 	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric');
 	    //$this->form_validation->set_rules('expiry_date[]', 'Expiry Date', 'trim|required');
@@ -442,6 +515,7 @@ class Products extends Admin_Controller
 	        $stock_data = array(
 	            'sales_invoice_id' => $this->input->post('sales_invoice_id'),
 	            'store_id' => $this->input->post('store_id'),
+	            'supplier_name' => $this->input->post('supplier_name'),
 	            'create_date' => $create_date,
 	            'user_id' => $user_id
 	        );
@@ -463,7 +537,6 @@ class Products extends Admin_Controller
 	        redirect('stocks-summary/'.$stock_id, 'refresh');
 	    }
 	    else {
-	        
 	        $warehouse_data = $this->model_stores->getStoresData($store_id);
 	        $warehouseName = str_replace(" ", "-", $warehouse_data['name']);
 	        $warehouseName = strtolower($warehouseName);

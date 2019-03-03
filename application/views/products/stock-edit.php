@@ -47,7 +47,7 @@
         					<label for="pd_disp_id">Sales Invoice No.</label>
                           <input type="text" class="form-control" id="sales_invoice_id" name="sales_invoice_id" placeholder="eg. SI-000001" autocomplete="off" value="<?php echo $stock_data[0]['sales_invoice'];?>"  />
                         </div>
-                        <div class="form-group col-md-4 col-xs-12">
+                        <div class="form-group col-md-3 col-xs-12">
                           <label for="unit_id">Destination Location</label>
                           <select class="form-control select_group" id="store_id" name="store_id">
                           	<option value=""></option>
@@ -55,6 +55,10 @@
                               <option value="<?php echo $v['id'] ?>" <?php if($v['id'] == $store['id']): echo "selected"; endif;?>><?php echo $v['name'] ?></option>
                             <?php endforeach ?>
                           </select>
+                        </div>
+                        <div class="form-group col-md-3 col-xs-12">
+                          <label for="supplier_name">Supplier Name</label>
+                          <input type="text" class="form-control" id="supplier_name" name="supplier_name" placeholder="eg Supplier Name" autocomplete="off" value="<?php echo $stock_data[0]['supplier_name'];?>"  />
                         </div>
                         <input id="mgrBuyer_new_qty_mappedFields" type='hidden' value="0" />
     				</div>

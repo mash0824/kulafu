@@ -21,6 +21,11 @@
               <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               <?php echo $this->session->flashdata('success'); ?>
             </div>
+            <?php elseif($this->session->flashdata('confirm')): ?>
+           <div id="confirm-disp" class="alert alert-success alert-dismissible" role="alert">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <?php echo $this->session->flashdata('confirm'); ?>
+            </div>
           <?php elseif($this->session->flashdata('error')): ?>
             <div class="alert alert-error alert-dismissible" role="alert">
               <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -76,13 +81,10 @@
                       <div>
                       <br/>
                       <input type="checkbox" id="checkme" name="checkme" value="1" <?php if($warehouse_data['transaction_status'] == "transferred"): echo "checked"; endif;?> /> <label for="checkme">Mark as transferred</label> <br/>
-                      <?php if($warehouse_data['transaction_status'] != "transferred"): ?>
                       <?php if(in_array('updateTransfer', $user_permission)): ?>
-                      <a href="javascript:void(0);" onclick="confirmOrder('<?php echo $warehouseId;?>','<?php echo $tid;?>');"  class="btn btn-primary">Confirm Transfer Order</a>
+                      <a id="confirm-link" href="javascript:void(0);" onclick="confirmOrder('<?php echo $warehouseId;?>','<?php echo $tid;?>');"  class="btn btn-primary <?php if($warehouse_data['transaction_status'] == "transferred"): ?>hide<?php endif;?>">Confirm Transfer Order</a>
                       <?php endif; ?>
-                      <?php else: ?> 
-                      <a href="javascript:void(0);" onclick="myFunction();" class="btn btn-primary">Download Transfer Order</a>
-                      <?php endif;?>
+                      <a id="confirm-download-link" href="javascript:void(0);" onclick="myFunction();" class="btn btn-primary  <?php if($warehouse_data['transaction_status'] != "transferred"): ?>hide<?php endif;?>">Download Transfer Order</a>
                       <?php if(in_array('updateTransfer', $user_permission)): ?>
                       <a href="<?php echo base_url('/transfers-edit/'.$warehouseNameLink.'/'.$warehouseId.'/'.$tid) ?>" class="btn btn-warning">Edit Transfer Order</a>
                       <?php endif; ?>
@@ -146,7 +148,7 @@
    
               // Total over all pages
               total = api
-                  .column( 3 )
+                  .column( 1 )
                   .data()
                   .reduce( function (a, b) {
                       return intVal(a) + intVal(b);
@@ -154,14 +156,14 @@
    
               // Total over this page
               pageTotal = api
-                  .column( 3, { page: 'current'} )
+                  .column( 1, { page: 'current'} )
                   .data()
                   .reduce( function (a, b) {
                       return intVal(a) + intVal(b);
                   }, 0 );
    
               // Update footer
-              $( api.column( 3 ).footer() ).html(
+              $( api.column( 1 ).footer() ).html(
             		  numFormat(pageTotal)
               );
 			}
@@ -196,6 +198,9 @@
                     '</div>');
                     // hide the modal
                     $("#removeModal").modal('hide');
+                    $("#confirm-disp").hide();
+                    $("#confirm-link").hide();
+                    $("#confirm-download-link").removeClass('hide');
                   } else {
             
                     $("#messages").html('<div class="alert alert-warning alert-dismissible" role="alert">'+
@@ -211,7 +216,11 @@
 		}
     }
     function myFunction() {
-  	  window.print();
+    	var restorepage = $('body').html();
+    	var printcontent = $('.table').clone();
+    	$('body').empty().html(printcontent);
+    	window.print();
+    	$('body').html(restorepage);
   	}
   </script>  
 

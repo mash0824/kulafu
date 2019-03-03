@@ -26,11 +26,12 @@ class Model_products extends CI_Model
 	public function getExpiryDetails($id=null){
 	   if($id) {
 	       $sql = "SELECT
-                product_id,  (select store_id from stocks WHERE id = stock_details.stock_id) as store_id
-                FROM 
-                stock_details
+                	product_id,SUM(quantity) as total_quantity
+                FROM
+                	stock_details
                 WHERE
-                expiry_date <= DATE_ADD(CURDATE(), INTERVAL 7 DAY) AND product_id = $id";
+                	expiry_date <= DATE_ADD(CURDATE() , INTERVAL 7 DAY)
+                AND product_id = '".intval($id)."' AND expiry_date != '1970-01-01'";
 	       $query = $this->db->query($sql);
 	       return $query->result_array();
 	   }
@@ -153,7 +154,54 @@ class Model_products extends CI_Model
 	    }
 	}
 	
-	public function getProductListByWarehouseNonGroup($warehouse_id){
+	public function getProductListByWarehouseNonGroup($warehouse_id,$withdraw=""){
+	    
+	    $d = " sum(skd.quantity) ";
+// 	    if($withdraw) {
+// 	        $d  = "IFNULL(
+// 				(
+// 					SELECT
+// 						sum(sss.quantity)
+// 					FROM
+// 						stock_details sss
+// 					WHERE
+// 					sss.product_id = skd.product_id
+// 					GROUP BY
+// 						sss.product_id
+// 				) ,
+// 				0
+// 			) ";
+// 	    }
+// 	    else {
+// 	        $d  = "IFNULL(
+// 				(
+// 					SELECT
+// 						sum(sss.quantity)
+// 					FROM
+// 						stock_details sss
+// 					WHERE
+// 						sss.expiry_date > DATE(NOW())
+// 					AND sss.product_id = skd.product_id
+// 					GROUP BY
+// 						sss.product_id
+// 				) ,
+// 				0
+// 			) + IFNULL(
+// 				(
+// 					SELECT
+// 						sum(sse.quantity)
+// 					FROM
+// 						stock_details sse
+// 					WHERE
+// 						sse.expiry_date = '1970-01-01'
+// 					AND sse.product_id = skd.product_id
+// 					GROUP BY
+// 						sse.product_id
+// 				) ,
+// 				0
+// 			)";
+// 	    }
+	    
 	    if($warehouse_id) {
 	        $sql = "
 	            SELECT
@@ -161,33 +209,7 @@ class Model_products extends CI_Model
                 	(SELECT units.`name` FROM units WHERE units.id = products.id) as unit_name, products.sale_price, products.cost, unit_id,
                 	(
                 		SELECT
-                			IFNULL(
-				(
-					SELECT
-						sum(sss.quantity)
-					FROM
-						stock_details sss
-					WHERE
-						sss.expiry_date > DATE(NOW())
-					AND sss.product_id = skd.product_id
-					GROUP BY
-						sss.product_id
-				) ,
-				0
-			) + IFNULL(
-				(
-					SELECT
-						sum(sse.quantity)
-					FROM
-						stock_details sse
-					WHERE
-						sse.expiry_date = '1970-01-01'
-					AND sse.product_id = skd.product_id
-					GROUP BY
-						sse.product_id
-				) ,
-				0
-			)
+                			$d 
                 		FROM
                 			stock_details skd, stocks stk
                 		WHERE
@@ -323,6 +345,7 @@ class Model_products extends CI_Model
 	    }
 	    $sql = <<<xxx
             SELECT
+                sds.id,
 	           strs.id as store_id,
             	strs.`name` as store_name ,
             	quantity ,
@@ -331,7 +354,7 @@ class Model_products extends CI_Model
             	expiry_date,
             	(CASE
             	     WHEN DATE(CURDATE()) >=  expiry_date AND expiry_date <> "1970-01-01" THEN "<span class='expiring'>Expired</span>"
-            	    WHEN DATE_ADD(CURDATE(), INTERVAL 7 DAY) >=  expiry_date AND expiry_date <> "1970-01-01" THEN "<span class='expiring'>Expiring Soon</span>"
+            	    WHEN DATE_ADD(CURDATE(), INTERVAL 7 DAY) >=  expiry_date AND expiry_date <> "1970-01-01" THEN "<span class='expiring'>Expiring</span>"
             	    ELSE "<span class='normal'>Normal</span>"
             	END) as stock_status,
             	(CASE
@@ -348,11 +371,30 @@ class Model_products extends CI_Model
             	pd.id = sds.product_id AND
             	sds.stock_id = sts.id AND 
             	strs.id = sts.store_id AND 
-            	unt.id = pd.unit_id AND 
+            	unt.id = pd.unit_id  AND 
             	sds.product_id = '$id' $and
+            	ORDER BY sds.id ASC, sds.expiry_date DESC
 xxx;
 	    $query = $this->db->query($sql);
 	    return $query->result_array();
+	}
+	
+	public function getExpiryDetailNew($pid,$sid=""){
+	    if($pid) {
+	        $ex = "";
+	        if($sid) {
+	            $ex = " AND trs.store_id = '".intval($sid)."' ";
+	        }
+	       $sql = "SELECT
+	        sum(trd.quantity) as expiry_total, product_id
+	        FROM
+	        transactions trs, transaction_details trd
+	        WHERE
+	        trs.transaction_type = 'withdrawal' AND trd.product_id = '".intval($pid)."' AND 
+	        trs.id = trd.transaction_id $ex ";
+	       $query = $this->db->query($sql);
+	       return $query->result_array();
+	    }
 	}
 	
 	public function getStockSummary($id){
@@ -362,6 +404,7 @@ SELECT
 	(SELECT `id` FROM products WHERE id = sds.product_id) AS product_id ,
     sds.id as stock_detail_id,
 	sds.quantity ,
+    sts.supplier_name,
     sts.store_id,
     sts.sales_invoice_id as sales_invoice,
 	(SELECT unt.name FROM units unt, products pd WHERE pd.unit_id = unt.id AND  pd.id = sds.product_id ) AS unit_name ,
@@ -394,23 +437,9 @@ FROM
 					FROM
 						stock_details sss
 					WHERE
-						sss.expiry_date > DATE(NOW())
-					AND sss.product_id = skd.product_id
+						sss.product_id = skd.product_id
 					GROUP BY
 						sss.product_id
-				) ,
-				0
-			) + IFNULL(
-				(
-					SELECT
-						sum(sse.quantity)
-					FROM
-						stock_details sse
-					WHERE
-						sse.expiry_date = '1970-01-01'
-					AND sse.product_id = skd.product_id
-					GROUP BY
-						sse.product_id
 				) ,
 				0
 			) as stock_count
@@ -430,8 +459,7 @@ LEFT JOIN(
 		transaction_details tds ,
 		transactions trs
 	WHERE
-		trs.transaction_type NOT IN('transfer')
-	AND trs.id = tds.transaction_id
+	trs.id = tds.transaction_id
 	group by
 		tds.product_id
 ) as C ON C.pdid = D.product_id
@@ -453,23 +481,9 @@ FROM
 					FROM
 						stock_details sss
 					WHERE
-						sss.expiry_date > DATE(NOW())
-					AND sss.product_id = skd.product_id
+						sss.product_id = skd.product_id
 					GROUP BY
 						sss.product_id
-				) ,
-				0
-			) + IFNULL(
-				(
-					SELECT
-						sum(sse.quantity)
-					FROM
-						stock_details sse
-					WHERE
-						sse.expiry_date = '1970-01-01'
-					AND sse.product_id = skd.product_id
-					GROUP BY
-						sse.product_id
 				) ,
 				0
 			) as stock_count
@@ -490,8 +504,7 @@ LEFT JOIN(
 		transaction_details tds ,
 		transactions trs
 	WHERE
-		trs.transaction_type NOT IN('transfer')
-	AND trs.id = tds.transaction_id
+		trs.id = tds.transaction_id
 	GROUP BY
 		tds.product_id
 ) as C ON C.pdid = D.product_id";

@@ -120,7 +120,7 @@
                         <td><?php echo $v['store_name']; ?></td>
                         <td><?php echo $v['quantity']; ?></td>
                         <td><?php echo $v['unit_name']; ?></td>
-                        <td><?php echo $v['expiry_date']; ?></td>
+                        <td><?php if($v['expiry_date'] == "1970-01-01"){echo "";} else {echo $v['expiry_date'];} ?></td>
                         <td><?php echo $v['stock_status']; ?></td>
                         <td>
                            <?php if(in_array('updateProduct', $user_permission) && in_array('updateWarehouse', $user_permission) && $v['stock_status_flag'] == 1): ?>

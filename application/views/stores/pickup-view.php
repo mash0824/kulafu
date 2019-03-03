@@ -21,6 +21,11 @@
               <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               <?php echo $this->session->flashdata('success'); ?>
             </div>
+            <?php elseif($this->session->flashdata('confirm')): ?>
+           <div id="confirm-disp" class="alert alert-success alert-dismissible" role="alert">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <?php echo $this->session->flashdata('confirm'); ?>
+            </div>
           <?php elseif($this->session->flashdata('error')): ?>
             <div class="alert alert-error alert-dismissible" role="alert">
               <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -90,13 +95,11 @@
                       <div>
                       <br/>
                       <input type="checkbox" id="checkme" name="checkme" value="1" <?php if($warehouse_data['transaction_status'] == "delivered"): echo "checked"; endif;?> /> <label for="checkme">Mark as picked up</label> <br/>
-                      <?php if($warehouse_data['transaction_status'] != "delivered"): ?>
+                      
                       	<?php if(in_array('updatePickup', $user_permission)): ?>
-                      <a href="javascript:void(0);" onclick="confirmOrder('<?php echo $warehouseId;?>','<?php echo $tid;?>');"  class="btn btn-primary">Confirm Pickup Order</a>
+                      <a id="confirm-link" href="javascript:void(0);" onclick="confirmOrder('<?php echo $warehouseId;?>','<?php echo $tid;?>');"  class="btn btn-primary <?php if($warehouse_data['transaction_status'] == "delivered"): ?>hide<?php endif;?>">Confirm Pickup Order</a>
                       <?php endif;?>
-                      <?php else: ?> 
-                      <a href="javascript:void(0);" onclick="myFunction();" class="btn btn-primary">Download Pickup Order</a>
-                      <?php endif;?>
+                      <a id="confirm-download-link" href="javascript:void(0);" onclick="myFunction();" class="btn btn-primary  <?php if($warehouse_data['transaction_status'] != "delivered"): ?>hide<?php endif;?>">Download Pickup Order</a>
                       <?php if(in_array('updatePickup', $user_permission)): ?>
                       <a href="<?php echo base_url('/pickups-edit/'.$warehouseNameLink.'/'.$warehouseId.'/'.$tid) ?>" class="btn btn-warning">Edit Pickup Order</a>
                       <?php endif;?>
@@ -211,6 +214,9 @@
                     '</div>');
                     // hide the modal
                     $("#removeModal").modal('hide');
+                    $("#confirm-disp").hide();
+                    $("#confirm-link").hide();
+                    $("#confirm-download-link").removeClass('hide');
                   } else {
             
                     $("#messages").html('<div class="alert alert-warning alert-dismissible" role="alert">'+
@@ -226,7 +232,11 @@
 		}
     }
     function myFunction() {
-  	  window.print();
+    	var restorepage = $('body').html();
+    	var printcontent = $('.table').clone();
+    	$('body').empty().html(printcontent);
+    	window.print();
+    	$('body').html(restorepage);
   	}
   </script>  
 

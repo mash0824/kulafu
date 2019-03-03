@@ -195,7 +195,17 @@ $(document).ready(function() {
 	    });
 
 	var table2 = $('#customerTable2').DataTable({
-	  	  dom: 'Bfrtip'
+	  	  dom: 'Bfrtip',
+	        buttons: [
+	                  {
+	                      extend: 'csv',
+	                      exportOptions: {
+	                          columns: [0,1,2,3,4,5]
+	                      },
+	                      footer: false
+	                     
+	                  },
+	  	        ]
 	    });
 	$('#myInputTextField').keyup(function(){
 		table.search($(this).val()).draw() ;
@@ -203,7 +213,7 @@ $(document).ready(function() {
   $("#warehouseMainNav").addClass('active');
   $("#deliveriesNav").addClass('active');
   $("#download-csv").on("click", function() {
-	    table.button( '.buttons-csv' ).trigger();
+	    table2.button( '.buttons-csv' ).trigger();
 	});
 
 });
