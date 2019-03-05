@@ -308,10 +308,18 @@ class Warehouses extends Admin_Controller
 	        $data = array(
 	            'transaction_status' => 'delivered',
 	        );
+	        if($this->input->get('tvalue') == "pending") {
+    	        $data = array(
+    	            'transaction_status' => 'pending',
+    	        );
+	        }
 	        $update = $this->model_stores->updateTransactions($tid,$data);
 	        if($update == true) {
 	            $response['success'] = true;
 	            $response['messages'] = "Successfully confirmed";
+	            if($this->input->get('tvalue') == "pending") {
+	               $response['messages'] = "Order has been created and is now pending";
+	            }
 	        }
 	        else {
 	            $response['success'] = false;
@@ -518,10 +526,18 @@ class Warehouses extends Admin_Controller
 	        $data = array(
 	            'transaction_status' => 'delivered',
 	        );
+	        if($this->input->get('tvalue') == "pending") {
+	            $data = array(
+	                'transaction_status' => 'pending',
+	            );
+	        }
 	        $update = $this->model_stores->updateTransactions($tid,$data);
 	        if($update == true) {
 	            $response['success'] = true;
 	            $response['messages'] = "Successfully confirmed";
+	            if($this->input->get('tvalue') == "pending") {
+	                $response['messages'] = "Order has been created and is now pending";
+	            }
 	        }
 	        else {
 	            $response['success'] = false;
@@ -761,10 +777,18 @@ class Warehouses extends Admin_Controller
 	        $data = array(
 	            'transaction_status' => 'transferred',
 	        );
+	        if($this->input->get('tvalue') == "pending") {
+	            $data = array(
+	                'transaction_status' => 'pending',
+	            );
+	        }
 	        $update = $this->model_stores->updateTransactions($tid,$data);
 	        if($update == true) {
 	            $response['success'] = true;
 	            $response['messages'] = "Successfully confirmed";
+	            if($this->input->get('tvalue') == "pending") {
+	                $response['messages'] = "Transfer has been created and is now pending";
+	            }
 	        }
 	        else {
 	            $response['success'] = false;
@@ -924,10 +948,18 @@ class Warehouses extends Admin_Controller
 	        $data = array(
 	            'transaction_status' => 'withdrew',
 	        );
+	        if($this->input->get('tvalue') == "pending") {
+	            $data = array(
+	                'transaction_status' => 'pending',
+	            );
+	        }
 	        $update = $this->model_stores->updateTransactions($tid,$data);
 	        if($update == true) {
 	            $response['success'] = true;
 	            $response['messages'] = "Successfully confirmed";
+	            if($this->input->get('tvalue') == "pending") {
+	                $response['messages'] = "Withdrawal has been created and is now pending";
+	            }
 	        }
 	        else {
 	            $response['success'] = false;

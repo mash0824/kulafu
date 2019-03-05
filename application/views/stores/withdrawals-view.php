@@ -80,12 +80,9 @@
                       </table>
                       <div>
                       <br/>
-                      <input type="checkbox" id="checkme" name="checkme" value="1" <?php if($warehouse_data['transaction_status'] == "withdrew"): echo "checked"; endif;?> /> <label for="checkme">Mark as withdrew</label> <br/>
+                      <input type="checkbox" id="checkme" name="checkme" value="1" <?php if(!in_array('updateWithdrawal', $user_permission)): ?> disabled <?php endif;?>  <?php if($warehouse_data['transaction_status'] == "withdrew"): echo "checked"; endif;?> /> <label for="checkme">Mark as withdrew</label> <br/>
                       
-                      <?php if(in_array('updateWithdrawal', $user_permission)): ?>
-                      <a id="confirm-link" href="javascript:void(0);" onclick="confirmOrder('<?php echo $warehouseId;?>','<?php echo $tid;?>');"  class="btn btn-primary <?php if($warehouse_data['transaction_status'] == "withdrew"): ?>hide<?php endif;?>">Confirm Withdrawal Order</a>
-                      <?php endif;?>
-                      <a id="confirm-download-link" href="javascript:void(0);" onclick="myFunction();" class="btn btn-primary <?php if($warehouse_data['transaction_status'] != "withdrew"): ?>hide<?php endif;?>">Download Withdrawal Order</a>
+                      <a id="confirm-download-link" href="javascript:void(0);" onclick="myFunction();" class="btn btn-primary">Download Withdrawal Order</a>
                       <?php if(in_array('updateWithdrawal', $user_permission) || in_array('viewWithdrawal', $user_permission)): ?>
                       <a href="<?php echo base_url('/withdrawals-edit/'.$warehouseNameLink.'/'.$warehouseId.'/'.$tid) ?>" class="btn btn-warning">Edit Withdrawal Order</a>
                       <?php endif;?>
@@ -119,6 +116,7 @@
       <form role="form" action="<?php echo base_url('withdrawals-confirm/'.$warehouseId.'/'.$tid) ?>" method="get" id="confirmForm">
         <div class="modal-body">
           <p>Do you really want to confirm withdrawal?</p>
+          <input type="hidden" id="tvalue" name="tvalue" value="" class="form-control"/>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -130,9 +128,34 @@
 </div><!-- /.modal -->
 <?php endif; ?>
   <script type="text/javascript">
+  var warehouseID = <?php echo $warehouseId; ?>;
+  var tid = <?php echo $tid; ?>;
+  var tvalue = <?php if($warehouse_data['transaction_status'] == "delivered"){ echo "'checked';\n";} else {echo "'pending';\n"; }?>
   var manageTable;
   var base_url = "<?php echo base_url(); ?>";
     $(document).ready(function() {
+    	$('#checkme').click(function(e) {
+            var checkstatus = 'pending';
+      	  if(!$('#checkme').prop('checked')){
+      		  tvalue = 'pending';
+      	  }
+      	  else {
+      		  tvalue = 'checked';
+      	  }
+      	  $('#tvalue').val(tvalue);
+      	  confirmOrder(warehouseID,tid);
+        } ); 
+        $("#closeModal").click(function(e) {
+      	  if(!$('#checkme').prop('checked')){
+      		  tvalue = 'checked';
+      		  $( "#checkme" ).prop( "checked", true );
+      	  }
+      	  else {
+      		  tvalue = 'pending';
+      		  $( "#checkme" ).prop( "checked", false );
+      	  }
+      	  $('#tvalue').val(tvalue);
+        });
       $('#warehouseMainNav').addClass('active');
       var numFormat = $.fn.dataTable.render.number( '\,', '.', 2, 'Php' ).display;
       $('#customerTable').DataTable({
@@ -174,13 +197,6 @@
     });
 
     function confirmOrder(storeid,tid){
-        if(!$('#checkme').prop('checked')){
-        	$("#messages").html('<div class="alert alert-warning alert-dismissible" role="alert">'+
-                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
-                    '<strong> <span class="glyphicon glyphicon-exclamation-sign"></span> </strong>Please check the box to confirm.</div>');
-        	$('#checkme').focus(); 
-        	return false;
-        }
         $('#removeModal').modal('toggle');
         if(storeid && tid) {
             $("#confirmForm").on('submit', function() {
@@ -188,7 +204,7 @@
               // remove the text-danger
               $(".text-danger").remove();
               $.ajax({
-                url: form.attr('action'),
+            	  url: form.attr('action')+'?'+$('#confirmForm').serialize(),
                 type: form.attr('method'),
                 dataType: 'json',
                 success:function(response) {
@@ -201,7 +217,6 @@
                     // hide the modal
                     $("#removeModal").modal('hide');
                     $("#confirm-disp").hide();
-                    $("#confirm-link").hide();
                     $("#confirm-download-link").removeClass('hide');
                   } else {
             
@@ -218,6 +233,8 @@
 		}
     }
     function myFunction() {
+    	$('#customerTable_info').remove();
+        $('#customerTable_paginate').remove();
     	var restorepage = $('body').html();
     	var printcontent = $('.table').clone();
     	$('body').empty().html(printcontent);
