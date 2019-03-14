@@ -64,7 +64,9 @@
                           <select class="form-control select_group" id="store_id" name="store_id" required>
                           	<option value=""></option>
                               <?php foreach ($customers as $k => $v): ?>
+                              <?php if($warehouse_data['id'] != $v['id']) :?>
                               <option value="<?php echo $v['id'] ?>" <?php if($v['id'] == $tdata['store_id']): echo "selected"; endif;?> ><?php echo $v['name'] ?></option>
+                              <?php endif ?>
                             <?php endforeach ?>
                           </select>
                         </div>

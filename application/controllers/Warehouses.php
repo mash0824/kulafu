@@ -840,6 +840,7 @@ class Warehouses extends Admin_Controller
 	        $display_id = $transactions[0]['delivery_id'];
 	    }
 	    
+	    
 	    $this->form_validation->set_rules('from_store_id', 'Source Location', 'trim|required');
 	    $this->form_validation->set_rules('store_id', 'Destination Location', 'trim|required');
 	    $this->form_validation->set_rules('product_id[]', 'Product name', 'trim|required');
@@ -847,13 +848,12 @@ class Warehouses extends Admin_Controller
 	    $this->form_validation->set_rules('customer_id', 'Customer', 'trim');
 	
 	    if ($this->form_validation->run() == TRUE) {
-	        
-	        
 	        $transaction_data = array(
 	            'store_id' => $this->input->post('store_id'),
 	            'customer_id' => $this->input->post('customer_id'),
 	            'transaction_status' => ($this->input->post('checkme') == 1 ? "transferred":"pending"),
 	        );
+	        $to_store_id = $transaction_data['store_id'];
 	        $stocks = $this->model_stores->getStockID($tid);
 	        $this->model_stores->updateTransactions($tid,$transaction_data);
 	        
