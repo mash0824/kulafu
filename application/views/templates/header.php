@@ -89,28 +89,26 @@
 
 
   <!-- DataTables -->
-<script src="<?php echo base_url('assets/bower_components/datatables.net/js/jquery.dataTables.min.js') ?>"></script>
-<script src="<?php echo base_url('assets/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') ?>"></script>
-<script src="https://cdn.datatables.net/buttons/1.4.0/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.4.0/js/buttons.flash.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.4.0/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.4.0/js/buttons.print.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.27/build/pdfmake.min.js"></script>
-<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.27/build/vfs_fonts.js"></script>
+ <script src="<?php echo base_url('assets/bower_components/datatables.net/js/jquery.dataTables.min.js') ?>"></script>
+ <script src="<?php echo base_url('assets/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') ?>"></script>
+ <script src="https://cdn.datatables.net/buttons/1.4.0/js/dataTables.buttons.min.js"></script>
+ <script src="https://cdn.datatables.net/buttons/1.4.0/js/buttons.flash.min.js"></script>
+ <script src="https://cdn.datatables.net/buttons/1.4.0/js/buttons.html5.min.js"></script>
+ <script src="https://cdn.datatables.net/buttons/1.4.0/js/buttons.print.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+ <script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.27/build/pdfmake.min.js"></script>
+ <script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.27/build/vfs_fonts.js"></script>
 
-
-
-
-
-
-
-
-
-
-
-
-
+ <script>
+ function isNumber(evt) {
+     evt = (evt) ? evt : window.event;
+     var charCode = (evt.which) ? evt.which : evt.keyCode;
+     if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+         return false;
+     }
+     return true;
+ }
+ </script>
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">

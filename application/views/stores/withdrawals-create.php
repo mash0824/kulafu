@@ -88,11 +88,11 @@
                             </div>
                             <div class="form-group col-md-2 col-xs-12">
                               <label for="quantity[]">Quantity</label>
-                              <input type="number" min="0" max="" class="form-control quantityLabel" id="quantity_0" name="quantity[]" data-row-id="row_0" placeholder="eg. 100" autocomplete="off" value="" required />
+                              <input type="number" min="0" max="" class="form-control quantityLabel" id="quantity_0" name="quantity[]" data-row-id="row_0" placeholder="100" autocomplete="off" value="" onkeypress="return isNumber(event)" required />
                             </div>
                             <div class="form-group col-md-2 col-xs-12">
                               <label for="unit_id[]">Unit of Measure</label>
-                              <select class="form-control select_group  unitLabel" id="unit_id_0" data-row-id="row_0" name="unit_id[]" readonly>
+                              <select class="form-control select_group  unitLabel" id="unit_id_0" data-row-id="row_0" name="unit_id[]" disabled>
                               	<option value=""></option>
                                 <?php foreach ($units as $k => $v): ?>
                                   <option value="<?php echo $v['id'] ?>"><?php echo $v['name'] ?></option>

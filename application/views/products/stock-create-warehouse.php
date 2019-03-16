@@ -75,7 +75,7 @@
                             </div>
                             <div class="form-group col-md-2 col-xs-12">
                               <label for="max_quantity">Quantity</label>
-                              <input type="number" min="0" max="" class="form-control fieldLabel1" id="quantity_1" name="quantity[]" placeholder="eg. 100" autocomplete="off" value="" required />
+                              <input type="number" min="0" max="" class="form-control fieldLabel1"  onkeypress="return isNumber(event)" id="quantity_1" name="quantity[]" placeholder="eg. 100" autocomplete="off" value="" required />
                             </div>
                             
                             <div class="form-group col-md-2 col-xs-12">

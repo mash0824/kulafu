@@ -76,7 +76,7 @@
                             </div>
                             <div class="form-group col-md-2 col-xs-12">
                               <label for="max_quantity">Quantity</label>
-                              <input type="text" class="form-control fieldLabel1" id="quantity_<?php echo $ct +1; ?>" name="quantity[]" placeholder="eg. 100" autocomplete="off" value="<?php echo $stock_data[$kk]['quantity'] ?>" required />
+                              <input type="text" class="form-control fieldLabel1"  onkeypress="return isNumber(event)" id="quantity_<?php echo $ct +1; ?>" name="quantity[]" placeholder="eg. 100" autocomplete="off" value="<?php echo $stock_data[$kk]['quantity'] ?>" required />
                             </div>
                             
                             <div class="form-group col-md-2 col-xs-12">

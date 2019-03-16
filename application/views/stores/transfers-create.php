@@ -106,7 +106,7 @@
                             </div>
                             <div class="form-group col-md-2 col-xs-12">
                               <label for="quantity[]">Quantity</label>
-                              <input type="number" min="0" max="" class="form-control quantityLabel" id="quantity_0" name="quantity[]" data-row-id="row_0" placeholder="eg. 100" autocomplete="off" value="" required />
+                              <input type="number" min="0" max="" class="form-control quantityLabel"  onkeypress="return isNumber(event)" id="quantity_0" name="quantity[]" data-row-id="row_0" placeholder="eg. 100" autocomplete="off" value="" required />
                             </div>
                             <div class="form-group col-md-2 col-xs-12">
                               <label for="unit_id[]">Unit of Measure</label>

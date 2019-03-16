@@ -120,11 +120,11 @@
                             </div>
                             <div class="form-group col-md-2 col-xs-12">
                               <label for="quantity[]">Quantity</label>
-                              <input type="number" min="0" max="" class="form-control quantityLabel" id="quantity_<?php echo $ct;?>" name="quantity[]" data-row-id="row_0" placeholder="eg. 100" autocomplete="off" value="<?php echo $value['quantity'];?>" required  <?php if($value['is_prod_deleted'] == 1):?>disabled<?php endif;?>/>
+                              <input type="number" min="0" max="" class="form-control quantityLabel" id="quantity_<?php echo $ct;?>" name="quantity[]" data-row-id="row_0" placeholder="100"  onkeypress="return isNumber(event)" autocomplete="off" value="<?php echo $value['quantity'];?>" required  <?php if($value['is_prod_deleted'] == 1):?>disabled<?php endif;?>/>
                             </div>
                             <div class="form-group col-md-2 col-xs-12">
                               <label for="unit_id[]">Unit of Measure</label>
-                              <select class="form-control select_group  unitLabel" id="unit_id_<?php echo $ct;?>" data-row-id="row_<?php echo $ct;?>" name="unit_id[]" readonly>
+                              <select class="form-control select_group  unitLabel" id="unit_id_<?php echo $ct;?>" data-row-id="row_<?php echo $ct;?>" name="unit_id[]" disabled>
                               	<option value=""></option>
                                 <?php foreach ($units as $k => $v): ?>
                                   <option value="<?php echo $v['id'] ?>" <?php if($value['unit_id'] == $v['id']): echo "selected"; endif;?>><?php echo $v['name'] ?></option>
