@@ -84,11 +84,11 @@ class Products extends Admin_Controller
             
             if($my_stock_count <= 0) {
                 $status = "<span class='expiring'>Out of Stock</span>";
-                $this->session->set_flashdata('errorc', 'Out of Stock');
+                //$this->session->set_flashdata('errorc', 'Out of Stock');
             }
             elseif($my_stock_count <= 10){
                 $status = "<span class='expiring'>Low Stock</span>";
-                $this->session->set_flashdata('errorc', 'Low Stock');
+                //$this->session->set_flashdata('errorc', 'Low Stock');
             }
             elseif(isset($expiry[0]['total_quantity'])  && isset($expiryDetails[0]['expiry_total'])) {
                 if(intval($expiry[0]['total_quantity']) > 0 && $expiryDetails[0]['expiry_total'] > 0) {
