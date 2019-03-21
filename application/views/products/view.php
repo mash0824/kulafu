@@ -190,6 +190,7 @@
 
       $('#customerTable').DataTable({
     	  dom: 'Bfrtip',
+    	  "pageLength": 500,
     	  "footerCallback": function ( row, data, start, end, display ) {
     		  var api = this.api(), data;
     		  

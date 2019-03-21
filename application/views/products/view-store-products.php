@@ -183,6 +183,7 @@
       $('#customerTable').DataTable({
     	  dom: 'Bfrtip',
     	  "bFilter": false,
+    	  "pageLength": 500,
     	  "footerCallback": function ( row, data, start, end, display ) {
     		  var api = this.api(), data;
     		  
