@@ -317,9 +317,11 @@ class Products extends Admin_Controller
 	        }
 	        $stock_count = count($stock_data);
 	        foreach ($stock_transaction as $key => $val) {
-	            $stock_count++;
-	            $stock_data[$stock_count] = $stock_transaction[$key];
-	            $stock_data[$stock_count]['quantity'] = "-".$stock_data[$stock_count]['quantity'];
+	            if(intval($stock_transaction[$key]['quantity']) > 0) {
+    	            $stock_count++;
+    	            $stock_data[$stock_count] = $stock_transaction[$key];
+    	            $stock_data[$stock_count]['quantity'] = "-".$stock_data[$stock_count]['quantity'];
+	            }
 	        }
 	        foreach ($stock_data as $k => $val) {
 	            switch ($stock_data[$k]['stock_status']) {
@@ -380,18 +382,20 @@ class Products extends Admin_Controller
             
             $stock_count = count($stock_data);
             foreach ($stock_transaction as $key => $val) {
-                if($stock_transaction[$key]['stock_status'] == "transfer") {
-                    if($store_id == $stock_transaction[$key]['from_store_id']) {
+                if(intval($stock_transaction[$key]['quantity']) > 0) {
+                    if($stock_transaction[$key]['stock_status'] == "transfer") {
+                        if($store_id == $stock_transaction[$key]['from_store_id']) {
+                            $stock_count++;
+                            $stock_data[$stock_count] = $stock_transaction[$key];
+                            $stock_data[$stock_count]['quantity'] = "-".$stock_data[$stock_count]['quantity'];
+                            
+                        }
+                    }
+                    else {
                         $stock_count++;
                         $stock_data[$stock_count] = $stock_transaction[$key];
                         $stock_data[$stock_count]['quantity'] = "-".$stock_data[$stock_count]['quantity'];
-                        
                     }
-                }
-                else {
-                    $stock_count++;
-                    $stock_data[$stock_count] = $stock_transaction[$key];
-                    $stock_data[$stock_count]['quantity'] = "-".$stock_data[$stock_count]['quantity'];
                 }
             }
             foreach ($stock_data as $k => $val) {
