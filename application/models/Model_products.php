@@ -346,38 +346,112 @@ class Model_products extends CI_Model
 	    $sql = <<<xxx
             SELECT
                 sds.id,
-	           strs.id as store_id,
-            	strs.`name` as store_name ,
-            	quantity ,
-            	unt.`name` as unit_name,
-            	sts.transaction_id,
-            	expiry_date,
-            	(CASE
-            	     WHEN DATE(CURDATE()) >=  expiry_date AND expiry_date <> "1970-01-01" THEN "<span class='expiring'>Expired</span>"
-            	    WHEN DATE_ADD(CURDATE(), INTERVAL 7 DAY) >=  expiry_date AND expiry_date <> "1970-01-01" THEN "<span class='expiring'>Expiring</span>"
-            	    ELSE "<span class='normal'>Normal</span>"
-            	END) as stock_status,
-            	(CASE
-            	    WHEN DATE_ADD(CURDATE(), INTERVAL 7 DAY) >=  expiry_date AND expiry_date <> "1970-01-01"  THEN 1
-            	    ELSE 0
-            	END) as stock_status_flag
-            FROM 
-            	stocks sts,
-            	stock_details sds,
-            	products pd,
-            	stores strs,
-            	units unt 
-            WHERE 
-            	pd.id = sds.product_id AND
-            	sds.stock_id = sts.id AND 
-            	strs.id = sts.store_id AND 
-            	unt.id = pd.unit_id  AND 
-            	sds.product_id = '$id' $and
-            	ORDER BY sds.id ASC, sds.expiry_date DESC
+                strs.id as store_id,
+                strs.`name` as store_name ,
+                sum(quantity) as quantity ,
+                unt.`name` as unit_name,
+                sts.transaction_id,
+                location,
+                expiry_date,
+                (CASE
+                     WHEN DATE(CURDATE()) >=  expiry_date AND expiry_date <> "1970-01-01" THEN "Expired"
+                    WHEN DATE_ADD(CURDATE(), INTERVAL 7 DAY) >=  expiry_date AND expiry_date <> "1970-01-01" THEN "Expiring"
+                    ELSE "Normal"
+                END) as stock_status,
+                (CASE
+                    WHEN DATE_ADD(CURDATE(), INTERVAL 7 DAY) >=  expiry_date AND expiry_date <> "1970-01-01"  THEN 1
+                    ELSE 0
+                END) as stock_status_flag
+                FROM 
+                stocks sts,
+                stock_details sds,
+                products pd,
+                stores strs,
+                units unt 
+                WHERE 
+                pd.id = sds.product_id AND
+                sds.stock_id = sts.id AND 
+                strs.id = sts.store_id AND 
+                unt.id = pd.unit_id  AND 
+                sds.product_id = '$id' $and  
+                GROUP BY sts.store_id, sds.expiry_date, sts.location 
+                ORDER BY sds.id ASC, sds.expiry_date DESC
 xxx;
 	    $query = $this->db->query($sql);
 	    return $query->result_array();
 	}
+	
+	public function productTransactionDetails($id,$store_id=null){
+	    $and = "";
+	    $andWhere = "";
+	    if($store_id) {
+	        $and = " '$store_id' ";
+	        $andWhere = " WHERE
+	        `transactions`.`store_id` = '$store_id'  OR `transactions`.`from_store_id` = '$store_id'";
+	    }
+	    else {
+	        $and = " `transactions`.`store_id` ";
+	    }
+	    $sql = <<<xxx
+	    SELECT 
+	     `transactions`.`id`,
+         (SELECT id FROM stores WHERE id = `transactions`.`store_id`) as store_id,
+         (SELECT `stores`.`name` FROM stores WHERE stores.id = $and) as store_name,
+         (SELECT sum(`transaction_details`.`quantity`) FROM `transaction_details` WHERE `transaction_details`.`transaction_id` = `transactions`.`id` AND `transaction_details`.`product_id` = '$id') as quantity,
+         (SELECT `units`.`name` FROM `units` WHERE `units`.`id` = (SELECT `products`.`unit_id` FROM `products` WHERE `products`.`id` = '$id')) as unit_name,
+         "" as transaction_id,
+         "" as location, 
+         "1970-01-01" as expiry_date,
+         `transactions`.`transaction_type` as stock_status,
+         0 as stock_status_flag,
+         `transactions`.`from_store_id`
+        FROM `transactions` 
+	    $andWhere
+xxx;
+	    $query = $this->db->query($sql);
+	    return $query->result_array();
+	}
+	
+// 	public function getStockHistory($id,$store_id=null){
+// 	    $and = "";
+// 	    if($store_id) {
+// 	        $and = " AND sts.store_id = '$store_id' ";
+// 	    }
+// 	    $sql = <<<xxx
+//             SELECT
+//                 sds.id,
+// 	           strs.id as store_id,
+//             	strs.`name` as store_name ,
+//             	quantity ,
+//             	unt.`name` as unit_name,
+//             	sts.transaction_id,
+//             	expiry_date,
+//             	(CASE
+//             	     WHEN DATE(CURDATE()) >=  expiry_date AND expiry_date <> "1970-01-01" THEN "<span class='expiring'>Expired</span>"
+//             	    WHEN DATE_ADD(CURDATE(), INTERVAL 7 DAY) >=  expiry_date AND expiry_date <> "1970-01-01" THEN "<span class='expiring'>Expiring</span>"
+//             	    ELSE "<span class='normal'>Normal</span>"
+//             	END) as stock_status,
+//             	(CASE
+//             	    WHEN DATE_ADD(CURDATE(), INTERVAL 7 DAY) >=  expiry_date AND expiry_date <> "1970-01-01"  THEN 1
+//             	    ELSE 0
+//             	END) as stock_status_flag
+//             FROM
+//             	stocks sts,
+//             	stock_details sds,
+//             	products pd,
+//             	stores strs,
+//             	units unt
+//             WHERE
+//             	pd.id = sds.product_id AND
+//             	sds.stock_id = sts.id AND
+//             	strs.id = sts.store_id AND
+//             	unt.id = pd.unit_id  AND
+//             	sds.product_id = '$id' $and
+//             	ORDER BY sds.id ASC, sds.expiry_date DESC
+// xxx;
+// 	    $query = $this->db->query($sql);
+// 	    return $query->result_array();
+// 	}
 	
 	public function getExpiryDetailNew($pid,$sid=""){
 	    if($pid) {
@@ -405,6 +479,7 @@ SELECT
     sds.id as stock_detail_id,
 	sds.quantity ,
     sts.supplier_name,
+    sts.location,
     sts.store_id,
     sts.sales_invoice_id as sales_invoice,
 	(SELECT unt.name FROM units unt, products pd WHERE pd.unit_id = unt.id AND  pd.id = sds.product_id ) AS unit_name ,

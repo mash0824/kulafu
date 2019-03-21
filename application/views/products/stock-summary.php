@@ -37,6 +37,14 @@
                   <th  class="thwidth">Destination Location</th>
                   <td><?php echo $stores['name']; ?></td>
                 </tr>
+                <tr>
+                  <th class="thwidth">Supplier Name</th>
+                  <td><?php echo $stock_data[0]['supplier_name']; ?></td>
+                </tr>
+                <tr>
+                  <th class="thwidth">Location</th>
+                  <td><?php echo $stock_data[0]['location']; ?></td>
+                </tr>
               </table>
               
               <div class="row">

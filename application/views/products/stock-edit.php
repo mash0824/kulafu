@@ -56,11 +56,17 @@
                             <?php endforeach ?>
                           </select>
                         </div>
-                        <div class="form-group col-md-3 col-xs-12">
+                        <input id="mgrBuyer_new_qty_mappedFields" type='hidden' value="0" />
+    				</div>
+    				<div class="col-sm-12 col-md-12">
+    				 	<div class="form-group col-md-3 col-xs-12">
                           <label for="supplier_name">Supplier Name</label>
                           <input type="text" class="form-control" id="supplier_name" name="supplier_name" placeholder="eg Supplier Name" autocomplete="off" value="<?php echo $stock_data[0]['supplier_name'];?>"  />
                         </div>
-                        <input id="mgrBuyer_new_qty_mappedFields" type='hidden' value="0" />
+                         <div class="form-group col-md-3 col-xs-12">
+                          <label for="location">Location</label>
+                          <input type="text" class="form-control" id="location" name="location" placeholder="eg Room A" autocomplete="off" value="<?php echo $stock_data[0]['location'];?>"  />
+                        </div>
     				</div>
                     <div class="col-xs-12" id="allMappedFields">
                     <?php $ct = 0; foreach ($stock_data as $kk => $v): ?>

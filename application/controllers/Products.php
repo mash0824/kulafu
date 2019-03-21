@@ -280,23 +280,25 @@ class Products extends Admin_Controller
 	    if($id) {
 	        $customer_data = $this->model_products->getProductData($id);
 	        $stock_data = $this->model_products->getStockHistory($id);
-	        
+	        $stock_transaction = $this->model_products->productTransactionDetails($id);
+// 	        echo "<prE>";
+// 	        print_r($stock_data);
 	        //fix transfer value
-	        $tmpQty = 0;
-	        foreach ($stock_data as $k => $val) {
-	            if(!empty($val['transaction_id'])) {
-	                $tmpQty = $val['quantity'];
-	            }
-	            else {
-	                $t = ($val['quantity'] - $tmpQty);
-	                $stock_data[$k]['quantity'] = ( $t > 0 ? $t  : 0);
-	                $tmpQty = 0;
-	            }
-	        }
+// 	        $tmpQty = 0;
+// 	        foreach ($stock_data as $k => $val) {
+// 	            if(!empty($val['transaction_id'])) {
+// 	                $tmpQty = $val['quantity'];
+// 	            }
+// 	            else {
+// 	                $t = ($val['quantity'] - $tmpQty);
+// 	                $stock_data[$k]['quantity'] = ( $t > 0 ? $t  : 0);
+// 	                $tmpQty = 0;
+// 	            }
+// 	        }
 	        //fix sort of data;
-	        usort($stock_data, function($a, $b) {
-	            return $a['id'] - $b['id'];
-	        });
+// 	        usort($stock_data, function($a, $b) {
+// 	            return $a['id'] - $b['id'];
+// 	        });
 // 	        echo "<prE>";
 // 	        print_r($stock_data);
 	        $expiry_total = array();
@@ -308,12 +310,42 @@ class Products extends Admin_Controller
 	                }
 	                if($expiry_total[$val['store_id']]['total'] >= $val['quantity']) {
 	                    $stock_data[$k]['stock_status_flag'] = 0;
-	                    $stock_data[$k]['stock_status'] = "<span class='expiring'>Withdrawn</span>";
+	                    $stock_data[$k]['stock_status'] = "Withdrawn - See details below";
 	                    $expiry_total[$val['store_id']]['total'] = $expiry_total[$val['store_id']]['total'] - $val['quantity'];
 	                }
 	            }
 	        }
-// 	        print_r($stock_data);
+	        $stock_count = count($stock_data);
+	        foreach ($stock_transaction as $key => $val) {
+	            $stock_count++;
+	            $stock_data[$stock_count] = $stock_transaction[$key];
+	            $stock_data[$stock_count]['quantity'] = "-".$stock_data[$stock_count]['quantity'];
+	        }
+	        foreach ($stock_data as $k => $val) {
+	            switch ($stock_data[$k]['stock_status']) {
+	                case "withdrawal": 
+	                    $stock_data[$k]['stock_status'] = "<span class='expiring'>Withdrawn</span>";
+	                    break;
+	                case "Withdrawn - See details below": 
+	                    $stock_data[$k]['stock_status'] = "<span class='expiring'>Withdrawn - See details below</span>";
+	                    break;
+	                    
+	                case "transfer": 
+	                    $stock_data[$k]['stock_status'] = "<span class='expiring'>Transferred</span>";
+	                    break;
+	                    
+	                case "delivery":
+	                case "pickup":
+	                    $stock_data[$k]['stock_status'] = "<span class='expiring'>Delivered</span>";
+	                    break;
+	                    
+	                default: 
+	                    $stock_data[$k]['stock_status'] = "<span class='normal'>Normal</span>";
+	                   break;
+	            }
+	        }
+// 	        echo "<pre>";
+//             print_r($stock_data);   
 	        $this->data['product_data'] = $customer_data;
 	        $this->data['stock_data'] = $stock_data;
 	        $this->render_template('products/view', $this->data);
@@ -329,6 +361,63 @@ class Products extends Admin_Controller
 	        $warehouseNameLink = $name;
 	        $customer_data = $this->model_products->getProductData($product_id);
 	        $stock_data = $this->model_products->getStockHistory($product_id,$store_id);
+	        $stock_transaction = $this->model_products->productTransactionDetails($product_id,$store_id);
+	        
+            $expiry_total = array();
+            foreach ($stock_data as $k => $val) {
+                if($val['stock_status_flag'] == 1) {
+                    if(!isset($expiry_total[$val['store_id']]['total'])) {
+                        $expiryDetails = $this->model_products->getExpiryDetailNew($product_id,$val['store_id']);
+                        $expiry_total[$val['store_id']]['total'] = $expiryDetails[0]['expiry_total'];
+                    }
+                    if($expiry_total[$val['store_id']]['total'] >= $val['quantity']) {
+                        $stock_data[$k]['stock_status_flag'] = 0;
+                        $stock_data[$k]['stock_status'] = "Withdrawn - See details below";
+                        $expiry_total[$val['store_id']]['total'] = $expiry_total[$val['store_id']]['total'] - $val['quantity'];
+                    }
+                }
+            }
+            
+            $stock_count = count($stock_data);
+            foreach ($stock_transaction as $key => $val) {
+                if($stock_transaction[$key]['stock_status'] == "transfer") {
+                    if($store_id == $stock_transaction[$key]['from_store_id']) {
+                        $stock_count++;
+                        $stock_data[$stock_count] = $stock_transaction[$key];
+                        $stock_data[$stock_count]['quantity'] = "-".$stock_data[$stock_count]['quantity'];
+                        
+                    }
+                }
+                else {
+                    $stock_count++;
+                    $stock_data[$stock_count] = $stock_transaction[$key];
+                    $stock_data[$stock_count]['quantity'] = "-".$stock_data[$stock_count]['quantity'];
+                }
+            }
+            foreach ($stock_data as $k => $val) {
+                switch ($stock_data[$k]['stock_status']) {
+                    case "withdrawal":
+                        $stock_data[$k]['stock_status'] = "<span class='expiring'>Withdrawn</span>";
+                        break;
+                    case "Withdrawn - See details below":
+                        $stock_data[$k]['stock_status'] = "<span class='expiring'>Withdrawn - See details below</span>";
+                        break;
+                         
+                    case "transfer":
+                        $stock_data[$k]['stock_status'] = "<span class='expiring'>Transferred</span>";
+                        break;
+                         
+                    case "delivery":
+                    case "pickup":
+                        $stock_data[$k]['stock_status'] = "<span class='expiring'>Delivered</span>";
+                        break;
+                         
+                    default:
+                        $stock_data[$k]['stock_status'] = "<span class='normal'>Normal</span>";
+                        break;
+                }
+            }
+	        
 	        $this->data['product_data'] = $customer_data;
 	        $this->data['stock_data'] = $stock_data;
 	        $this->data['warehouseNameLink'] = $warehouseNameLink;
@@ -399,6 +488,7 @@ class Products extends Admin_Controller
 	    $this->form_validation->set_rules('product_id[]', 'Product name', 'trim|required');
 	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric');
 	    $this->form_validation->set_rules('supplier_name', 'Supplier Name', 'trim');
+	    $this->form_validation->set_rules('location', 'Location', 'trim');
 	    //$this->form_validation->set_rules('expiry_date[]', 'Expiry Date', 'trim|required');
 	    
 	    if ($this->form_validation->run() == TRUE) {
@@ -406,6 +496,7 @@ class Products extends Admin_Controller
 	            'sales_invoice_id' => $this->input->post('sales_invoice_id'),
 	            'store_id' => $this->input->post('store_id'),
 	            'supplier_name' => $this->input->post('supplier_name'),
+	            'location' => $this->input->post('location'),
 	        );
 	        //update stocks
 	        $this->model_products->updateStocks($stock_data,$stock_id);
@@ -504,6 +595,7 @@ class Products extends Admin_Controller
 	    $this->form_validation->set_rules('sales_invoice_id', 'Sales Invoice', 'trim|required');
 	    $this->form_validation->set_rules('store_id', 'Destination', 'trim|required');
 	    $this->form_validation->set_rules('supplier_name', 'Supplier Name', 'trim');
+	    $this->form_validation->set_rules('location', 'Location', 'trim');
 	    $this->form_validation->set_rules('product_id[]', 'Product name', 'trim|required');
 	    $this->form_validation->set_rules('quantity[]', 'Quantity', 'trim|required|numeric');
 	    //$this->form_validation->set_rules('expiry_date[]', 'Expiry Date', 'trim|required');
@@ -516,6 +608,7 @@ class Products extends Admin_Controller
 	            'sales_invoice_id' => $this->input->post('sales_invoice_id'),
 	            'store_id' => $this->input->post('store_id'),
 	            'supplier_name' => $this->input->post('supplier_name'),
+	            'location' => $this->input->post('location'),
 	            'create_date' => $create_date,
 	            'user_id' => $user_id
 	        );

@@ -101,6 +101,7 @@
               <table id="customerTable" class="table table-bordered table-striped">
                 <thead>
                 <tr>
+                  <th>Warehouse</th>
                   <th>Location</th>
                   <th>Quantity</th>
                   <th>Unit</th>
@@ -113,6 +114,7 @@
                 </thead>
                 <tfoot>
             		<tr>
+            			<td></td>
             			<td>Total</td>
             			<td></td>
             			<td><?php if($stock_data): echo $stock_data[0]['unit_name']; endif;?></td>
@@ -126,6 +128,7 @@
                     <?php foreach ($stock_data as $k => $v): ?>
                       <tr>
                         <td><?php echo $v['store_name']; ?></td>
+                        <td><?php echo $v['location']; ?></td>
                         <td><?php echo $v['quantity']; ?></td>
                         <td><?php echo $v['unit_name']; ?></td>
                         <td><?php if($v['expiry_date'] == "1970-01-01"){echo "";} else {echo $v['expiry_date'];} ?></td>
@@ -200,7 +203,7 @@
    
               // Total over all pages
               total = api
-                  .column( 1 )
+                  .column( 2 )
                   .data()
                   .reduce( function (a, b) {
                       return intVal(a) + intVal(b);
@@ -208,14 +211,14 @@
    
               // Total over this page
               pageTotal = api
-                  .column( 1, { page: 'current'} )
+                  .column( 2, { page: 'current'} )
                   .data()
                   .reduce( function (a, b) {
                       return intVal(a) + intVal(b);
                   }, 0 );
    
               // Update footer
-              $( api.column( 1 ).footer() ).html(
+              $( api.column( 2 ).footer() ).html(
                   pageTotal
               );
 			}
