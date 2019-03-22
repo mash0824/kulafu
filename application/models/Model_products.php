@@ -246,7 +246,7 @@ class Model_products extends CI_Model
                 
                 WHERE
                 	stocks.id = stock_details.stock_id AND products.id = stock_details.product_id
-                	AND stocks.store_id = 1 AND stock_details.is_deleted = 0 AND products.is_deleted = 0 
+                	AND stocks.store_id = '".intval($warehouse_id)."' AND stock_details.is_deleted = 0 AND products.is_deleted = 0 
                 	GROUP BY products.id HAVING stock_count >0
 	            ";
 	        $query = $this->db->query($sql);
