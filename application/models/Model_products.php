@@ -388,7 +388,7 @@ xxx;
 	    if($store_id) {
 	        $and = " '$store_id' ";
 	        $andWhere = " AND 
-	        t.store_id = '$store_id'  OR t.from_store_id = '$store_id'";
+	        (t.store_id = '$store_id'  OR t.from_store_id = '$store_id')";
 	    }
 	    else {
 	        $and = " t.store_id ";
@@ -410,7 +410,7 @@ xxx;
         FROM
         `transactions` t,`transaction_details` td, `products` p
         WHERE
-        t.id = td.transaction_id AND p.id = td.product_id 
+        t.id = td.transaction_id AND p.id = td.product_id  AND p.id = '$id' AND td.product_id = '$id'
         $andWhere
         GROUP BY t.transaction_type, date_created, store_id
 	    
