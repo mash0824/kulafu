@@ -97,6 +97,7 @@
                   <th>Location</th>
                   <th>Quantity</th>
                   <th>Unit</th>
+                  <th>Create Date</th>
                   <th>Expiry Date</th>
                   <th>Status</th>
                   <?php if(in_array('updateGroup', $user_permission) || in_array('deleteGroup', $user_permission)): ?>
@@ -113,6 +114,7 @@
             			<td></td>
             			<td></td>
             			<td></td>
+            			<td></td>
             		</tr>
             	</tfoot>
                 <tbody>
@@ -123,6 +125,7 @@
                         <td><?php echo $v['location']; ?></td>
                         <td><?php echo $v['quantity']; ?></td>
                         <td><?php echo $v['unit_name']; ?></td>
+                        <td><?php echo $v['date_created']; ?></td>
                         <td><?php if($v['expiry_date'] == "1970-01-01"){echo "";} else {echo $v['expiry_date'];} ?></td>
                         <td><?php echo $v['stock_status']; ?></td>
                         <td>
@@ -183,7 +186,7 @@
       $('#customerTable').DataTable({
     	  dom: 'Bfrtip',
     	  "bFilter": false,
-    	  "pageLength": 500,
+    	  "pageLength": 25,
     	  "footerCallback": function ( row, data, start, end, display ) {
     		  var api = this.api(), data;
     		  

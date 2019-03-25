@@ -353,6 +353,7 @@ class Model_products extends CI_Model
                 sts.transaction_id,
                 location,
                 expiry_date,
+		        DATE_FORMAT(sts.create_date, '%m/%d/%Y') as date_created,
                 (CASE
                      WHEN DATE(CURDATE()) >=  expiry_date AND expiry_date <> "1970-01-01" THEN "Expired"
                     WHEN DATE_ADD(CURDATE(), INTERVAL 7 DAY) >=  expiry_date AND expiry_date <> "1970-01-01" THEN "Expiring"
@@ -386,27 +387,33 @@ xxx;
 	    $andWhere = "";
 	    if($store_id) {
 	        $and = " '$store_id' ";
-	        $andWhere = " WHERE
-	        `transactions`.`store_id` = '$store_id'  OR `transactions`.`from_store_id` = '$store_id'";
+	        $andWhere = " AND 
+	        t.store_id = '$store_id'  OR t.from_store_id = '$store_id'";
 	    }
 	    else {
-	        $and = " `transactions`.`store_id` ";
+	        $and = " t.store_id ";
 	    }
 	    $sql = <<<xxx
 	    SELECT 
-	     `transactions`.`id`,
-         (SELECT id FROM stores WHERE id = `transactions`.`store_id`) as store_id,
-         (SELECT `stores`.`name` FROM stores WHERE stores.id = $and) as store_name,
-         (SELECT sum(`transaction_details`.`quantity`) FROM `transaction_details` WHERE `transaction_details`.`transaction_id` = `transactions`.`id` AND `transaction_details`.`product_id` = '$id') as quantity,
-         (SELECT `units`.`name` FROM `units` WHERE `units`.`id` = (SELECT `products`.`unit_id` FROM `products` WHERE `products`.`id` = '$id')) as unit_name,
-         "" as transaction_id,
-         "" as location, 
-         "1970-01-01" as expiry_date,
-         `transactions`.`transaction_type` as stock_status,
-         0 as stock_status_flag,
-         `transactions`.`from_store_id`
-        FROM `transactions` 
-	    $andWhere
+        t.id,
+        (SELECT id FROM stores WHERE id = t.store_id) as store_id,
+        (SELECT `stores`.`name` FROM stores WHERE stores.id = $and) as store_name,
+        sum(td.quantity) as quantity,
+        (SELECT `units`.`name` FROM `units` WHERE `units`.`id` = p.unit_id) as unit_name,
+        "" as transaction_id,
+        "" as location, 
+        "1970-01-01" as expiry_date,
+        DATE_FORMAT(t.create_date, '%m/%d/%Y') as date_created,
+        t.transaction_type as stock_status,
+        0 as stock_status_flag,
+        t.from_store_id
+        FROM
+        `transactions` t,`transaction_details` td, `products` p
+        WHERE
+        t.id = td.transaction_id AND p.id = td.product_id 
+        $andWhere
+        GROUP BY t.transaction_type, date_created, store_id
+	    
 xxx;
 	    $query = $this->db->query($sql);
 	    return $query->result_array();
