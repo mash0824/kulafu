@@ -97,7 +97,7 @@ class Products extends Admin_Controller
                     }
                     else {
                         $status = "<span class='expiring'>Expiring</span>";
-                        $buttons .= '&nbsp;<a href="'.base_url('withdrawals-create/manage/'.$expiry[0]['store_id']).'" class="redlink">Withdraw</a>';
+                        //$buttons .= '&nbsp;<a href="'.base_url('withdrawals-create/manage/'.$expiry[0]['store_id']).'" class="redlink">Withdraw</a>';
                     }
                 }
                 else {
