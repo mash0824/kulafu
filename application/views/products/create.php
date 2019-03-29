@@ -93,12 +93,12 @@
                     </div>
     				<div class="col-xs-12">
                         <div class="form-group col-md-3 col-xs-12">
-                          <label for="price">Price</label>
+                          <label for="price">Cost</label>
                           <input type="text" class="form-control" id="cost" name="cost" placeholder="eg. 20.00" autocomplete="off" value="<?php echo $this->input->post('cost') ?>"/>
                         </div>
                         
                         <div class="form-group  col-md-3 col-xs-12">
-                          <label for="sale_price">Cost</label>
+                          <label for="sale_price">Sale Price</label>
                           <input type="text" class="form-control" id="sale_price" name="sale_price" placeholder="eg. 40.00" autocomplete="off" value="<?php echo $this->input->post('sale_price') ?>"/>
                         </div>
                     </div>
